@@ -239,6 +239,10 @@
                     <p class="mb-4">"Sriwijaya Course benar-benar mengubah cara saya belajar. Mentornya sangat responsif dan materi yang diberikan sangat relevan dengan industri. Sekarang saya sudah bisa mendapatkan pekerjaan di bidang yang saya impikan!"</p>
                     <div class="d-flex align-items-center">
                         <!-- Ade (male portrait) -->
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=faces"
+                            alt="Ade Pratama"
+                            class="rounded-circle me-3"
+                            style="width: 60px; height: 60px; object-fit: cover;">
                         <div>
                             <h6 class="mb-0 fw-bold">Ade Pratama</h6>
                             <small class="text-muted">Frontend Developer</small>
@@ -260,6 +264,10 @@
                     <p class="mb-4">"Saya terkesan dengan komunitas yang sangat supportif dan mentor yang berpengalaman. Tidak hanya belajar skill teknis, tapi juga soft skill yang sangat penting untuk karier. Recommended banget!"</p>
                     <div class="d-flex align-items-center">
                         <!-- Siti (female portrait) -->
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces"
+                            alt="Siti Nurhaliza"
+                            class="rounded-circle me-3"
+                            style="width: 60px; height: 60px; object-fit: cover;">
                         <div>
                             <h6 class="mb-0 fw-bold">Siti Nurhaliza</h6>
                             <small class="text-muted">Digital Marketing Specialist</small>
@@ -281,6 +289,10 @@
                     <p class="mb-4">"Materi terstruktur dengan baik dan cara pengajaran yang mudah dipahami. Saya dari background non-IT dan sekarang sudah bisa membuat website sendiri. Terima kasih Sriwijaya Course!"</p>
                     <div class="d-flex align-items-center">
                         <!-- Budi (male portrait) -->
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=faces"
+                            alt="Budi Santoso"
+                            class="rounded-circle me-3"
+                            style="width: 60px; height: 60px; object-fit: cover;">
                         <div>
                             <h6 class="mb-0 fw-bold">Budi Santoso</h6>
                             <small class="text-muted">UI/UX Designer</small>

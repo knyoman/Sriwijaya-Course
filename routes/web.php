@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\CourseDetailController;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/courses', [PageController::class, 'courses'])->name('courses');
@@ -16,10 +17,9 @@ Route::post('/login', function () {
     // Logic login akan ditambahkan nanti
 })->name('login.post');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register'])->name('register.post');
+});
 
-Route::post('/register', function () {
-    // Logic register akan ditambahkan nanti
-})->name('register.post');
+Route::get('/courses/{slug}', [CourseDetailController::class, 'show'])->name('course.detail');

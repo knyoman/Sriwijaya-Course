@@ -62,7 +62,7 @@
         <div class="row">
             <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
                 <p class="mb-0 text-secondary">
-                    &copy; 2024 Sriwijaya Course. Semua hak dilindungi.
+                    &copy; 2025 Sriwijaya Course. Semua hak dilindungi.
                 </p>
             </div>
             <div class="col-md-6 text-center text-md-end">

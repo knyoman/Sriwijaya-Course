@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mentoring;
+use App\Models\MentoringFeedback;
 use App\Models\User;
+use App\Models\Kursus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MentoringController extends Controller
 {
@@ -13,7 +16,7 @@ class MentoringController extends Controller
      */
     public function index()
     {
-        $mentorings = Mentoring::with('pengajar')->orderBy('tanggal', 'asc')->get();
+        $mentorings = Mentoring::with('pengajar', 'kursus.pelajar')->orderBy('tanggal', 'asc')->get();
         return view('pages.admin.mentoring', compact('mentorings'));
     }
 
@@ -23,7 +26,8 @@ class MentoringController extends Controller
     public function create()
     {
         $pengajars = User::where('peran', 'pengajar')->get();
-        return view('pages.admin.mentoring-form', compact('pengajars'));
+        $kursuses = Kursus::all();
+        return view('pages.admin.mentoring-form', compact('pengajars', 'kursuses'));
     }
 
     /**
@@ -33,9 +37,12 @@ class MentoringController extends Controller
     {
         $validated = $request->validate([
             'pengajar_id' => 'required|exists:pengguna,id',
+            'kursus_id' => 'required|exists:kursus,id',
             'tanggal' => 'required|date|after:today',
             'jam' => 'required|date_format:H:i',
-            'status' => 'required|in:Belum,Sudah',
+            'durasi' => 'required|integer|min:15|max:480',
+            'topik' => 'required|string|max:255',
+            'status' => 'required|in:Belum,Sedang Berlangsung,Sudah',
             'zoom_link' => 'nullable|url',
         ]);
 
@@ -51,7 +58,8 @@ class MentoringController extends Controller
     {
         $mentoring = Mentoring::findOrFail($id);
         $pengajars = User::where('peran', 'pengajar')->get();
-        return view('pages.admin.mentoring-form', compact('mentoring', 'pengajars'));
+        $kursuses = Kursus::all();
+        return view('pages.admin.mentoring-form', compact('mentoring', 'pengajars', 'kursuses'));
     }
 
     /**
@@ -63,9 +71,12 @@ class MentoringController extends Controller
 
         $validated = $request->validate([
             'pengajar_id' => 'required|exists:pengguna,id',
+            'kursus_id' => 'required|exists:kursus,id',
             'tanggal' => 'required|date',
             'jam' => 'required|date_format:H:i',
-            'status' => 'required|in:Belum,Sudah',
+            'durasi' => 'required|integer|min:15|max:480',
+            'topik' => 'required|string|max:255',
+            'status' => 'required|in:Belum,Sedang Berlangsung,Sudah',
             'zoom_link' => 'nullable|url',
         ]);
 
@@ -83,5 +94,44 @@ class MentoringController extends Controller
         $mentoring->delete();
 
         return redirect()->route('admin.mentoring')->with('success', 'Jadwal mentoring berhasil dihapus');
+    }
+
+    /**
+     * Student: Simpan feedback mentoring
+     */
+    public function storeFeedback(Request $request, $mentoringId)
+    {
+        $mentoring = Mentoring::findOrFail($mentoringId);
+
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'feedback_text' => 'required|string|min:10|max:1000',
+            'benefits' => 'nullable|array',
+        ]);
+
+        $validated['mentoring_id'] = $mentoringId;
+        $validated['pelajar_id'] = Auth::id();
+
+        // Update atau create feedback
+        MentoringFeedback::updateOrCreate(
+            [
+                'mentoring_id' => $mentoringId,
+                'pelajar_id' => Auth::id(),
+            ],
+            $validated
+        );
+
+        return redirect()->back()->with('success', 'Terima kasih atas feedback Anda!');
+    }
+
+    /**
+     * Admin: Lihat feedback dari pelajar untuk mentoring tertentu
+     */
+    public function showFeedback($mentoringId)
+    {
+        $mentoring = Mentoring::with('pengajar', 'kursus', 'feedbacks.pelajar')->findOrFail($mentoringId);
+        $feedbacks = $mentoring->feedbacks;
+
+        return view('pages.admin.mentoring-feedback', compact('mentoring', 'feedbacks'));
     }
 }

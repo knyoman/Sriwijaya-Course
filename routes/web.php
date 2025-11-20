@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/student/courses/{id}/enroll', [CourseController::class, 'studentEnroll'])->name('student.course.enroll');
         Route::get('/student/certificates', [CertificateController::class, 'index'])->name('student.certificates');
         Route::get('/student/mentoring', [CourseController::class, 'studentMentoring'])->name('student.mentoring');
+        Route::post('/student/mentoring/{mentoringId}/feedback', [MentoringController::class, 'storeFeedback'])->name('student.mentoring.feedback');
         Route::get('/student/payments', [CourseController::class, 'studentPayments'])->name('student.payments');
         Route::get('/student/profile', [ProfileController::class, 'show'])->name('student.profile');
         Route::put('/student/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -151,6 +152,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/mentoring/{id}/edit', [MentoringController::class, 'edit'])->name('admin.mentoring.edit');
         Route::post('/admin/mentoring/{id}/update', [MentoringController::class, 'update'])->name('admin.mentoring.update');
         Route::delete('/admin/mentoring/{id}', [MentoringController::class, 'destroy'])->name('admin.mentoring.destroy');
+        Route::get('/admin/mentoring/{mentoringId}/feedback', [MentoringController::class, 'showFeedback'])->name('admin.mentoring.feedback');
 
         Route::get('/admin/certificates', function () {
             return view('pages.admin.certificates');

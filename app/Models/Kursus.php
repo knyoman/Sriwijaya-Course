@@ -75,6 +75,14 @@ class Kursus extends Model
     }
 
     /**
+     * Relationship: Kursus has many Mentoring
+     */
+    public function mentoring()
+    {
+        return $this->hasMany(Mentoring::class, 'kursus_id');
+    }
+
+    /**
      * Mutator: Auto generate slug from nama
      */
     protected static function boot()

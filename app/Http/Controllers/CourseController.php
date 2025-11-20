@@ -245,7 +245,7 @@ class CourseController extends Controller
      */
     public function studentMentoring()
     {
-        $mentorings = Mentoring::orderBy('tanggal', 'asc')->get();
+        $mentorings = Mentoring::with('pengajar', 'kursus.pelajar')->orderBy('tanggal', 'asc')->get();
         return view('pages.student.mentoring', compact('mentorings'));
     }
 
@@ -255,19 +255,9 @@ class CourseController extends Controller
     public function teacherMentoring()
     {
         $mentorings = Mentoring::where('pengajar_id', auth()->id())
-            ->with('pengajar')
+            ->with('pengajar', 'kursus.pelajar')
             ->orderBy('tanggal', 'asc')
             ->get();
-
-        // Hitung peserta untuk setiap mentoring (dari pelajar yang enrolled di kursus pengajar)
-        foreach ($mentorings as $mentoring) {
-            $courses = Kursus::where('pengajar_id', auth()->id())->get();
-            $peserta = 0;
-            foreach ($courses as $course) {
-                $peserta += $course->pelajar()->count();
-            }
-            $mentoring->peserta = $peserta;
-        }
 
         return view('pages.teacher.mentoring', compact('mentorings'));
     }

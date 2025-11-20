@@ -9,7 +9,7 @@
             <h5 class="mb-4">{{ isset($mentoring) ? 'Edit Jadwal Mentoring' : 'Tambah Jadwal Mentoring' }}</h5>
 
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <form action="{{ isset($mentoring) ? route('admin.mentoring.update', $mentoring->id) : route('admin.mentoring.store') }}" method="POST">
@@ -18,8 +18,11 @@
                                 @method('POST')
                                 @endif
 
+                                <!-- Informasi Dasar -->
+                                <h6 class="mb-3 border-bottom pb-2">Informasi Dasar</h6>
+
                                 <div class="mb-3">
-                                    <label for="pengajar_id" class="form-label">Nama Pengajar</label>
+                                    <label for="pengajar_id" class="form-label">Nama Pengajar <span class="text-danger">*</span></label>
                                     <select class="form-control @error('pengajar_id') is-invalid @enderror" id="pengajar_id" name="pengajar_id" required>
                                         <option value="">Pilih Pengajar</option>
                                         @foreach($pengajars as $pengajar)
@@ -30,23 +33,55 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="tanggal" class="form-label">Tanggal Mentoring</label>
-                                    <input type="date" class="form-control @error('tanggal') is-invalid @enderror" id="tanggal" name="tanggal" value="{{ isset($mentoring) ? $mentoring->tanggal->format('Y-m-d') : '' }}" required>
-                                    @error('tanggal')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                    <label for="kursus_id" class="form-label">Kursus <span class="text-danger">*</span></label>
+                                    <select class="form-control @error('kursus_id') is-invalid @enderror" id="kursus_id" name="kursus_id" required>
+                                        <option value="">Pilih Kursus</option>
+                                        @foreach($kursuses as $kursus)
+                                        <option value="{{ $kursus->id }}" {{ isset($mentoring) && $mentoring->kursus_id === $kursus->id ? 'selected' : '' }}>{{ $kursus->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('kursus_id')<span class="invalid-feedback">{{ $message }}</span>@enderror
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="jam" class="form-label">Jam Mentoring</label>
-                                    <input type="time" class="form-control @error('jam') is-invalid @enderror" id="jam" name="jam" value="{{ isset($mentoring) ? $mentoring->jam : '' }}" required>
-                                    @error('jam')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                    <label for="topik" class="form-label">Topik Mentoring <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('topik') is-invalid @enderror" id="topik" name="topik" placeholder="Contoh: Web Development Basics" value="{{ isset($mentoring) ? $mentoring->topik : '' }}" required>
+                                    @error('topik')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="tanggal" class="form-label">Tanggal Mentoring <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control @error('tanggal') is-invalid @enderror" id="tanggal" name="tanggal" value="{{ isset($mentoring) ? $mentoring->tanggal->format('Y-m-d') : '' }}" required>
+                                            @error('tanggal')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="jam" class="form-label">Jam Mulai <span class="text-danger">*</span></label>
+                                            <input type="time" class="form-control @error('jam') is-invalid @enderror" id="jam" name="jam" value="{{ isset($mentoring) ? $mentoring->jam : '' }}" required>
+                                            @error('jam')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="status" class="form-label">Status</label>
+                                    <label for="durasi" class="form-label">Durasi (menit) <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control @error('durasi') is-invalid @enderror" id="durasi" name="durasi" placeholder="Contoh: 60" value="{{ isset($mentoring) ? $mentoring->durasi : '' }}" required>
+                                    @error('durasi')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                </div>
+
+                                <!-- Status dan Link -->
+                                <h6 class="mb-3 border-bottom pb-2 mt-4">Status dan Akses</h6>
+
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Status Mentoring <span class="text-danger">*</span></label>
                                     <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
                                         <option value="">Pilih Status</option>
-                                        <option value="Belum" {{ isset($mentoring) && $mentoring->status === 'Belum' ? 'selected' : '' }}>Belum</option>
-                                        <option value="Sudah" {{ isset($mentoring) && $mentoring->status === 'Sudah' ? 'selected' : '' }}>Sudah</option>
+                                        <option value="Belum" {{ isset($mentoring) && $mentoring->status === 'Belum' ? 'selected' : '' }}>Belum Dimulai</option>
+                                        <option value="Sedang Berlangsung" {{ isset($mentoring) && $mentoring->status === 'Sedang Berlangsung' ? 'selected' : '' }}>Sedang Berlangsung</option>
+                                        <option value="Sudah" {{ isset($mentoring) && $mentoring->status === 'Sudah' ? 'selected' : '' }}>Sudah Selesai</option>
                                     </select>
                                     @error('status')<span class="invalid-feedback">{{ $message }}</span>@enderror
                                 </div>

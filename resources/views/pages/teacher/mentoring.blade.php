@@ -29,7 +29,13 @@
                                 {{ $mentoring->tanggal->format('d M Y') }} - {{ $mentoring->jam }}
                             </td>
                             <td>
-                                <span class="badge bg-light text-dark">{{ $mentoring->peserta ?? 0 }} orang</span>
+                                <span class="badge bg-light text-dark">
+                                    @if($mentoring->kursus)
+                                    Peserta: {{ $mentoring->kursus->pelajar()->count() }}
+                                    @else
+                                    Peserta: 0
+                                    @endif
+                                </span>
                             </td>
                             <td>
                                 <span class="badge {{ $mentoring->status === 'Sudah' ? 'bg-success' : 'bg-warning' }}">

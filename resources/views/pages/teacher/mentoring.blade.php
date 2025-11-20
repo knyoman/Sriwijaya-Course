@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Jadwal Mentoring - Pengajar')
 @section('content')
-@include('components.navbar-teacher')
 <div class="d-flex">
     @include('components.sidebar-teacher')
     <main style="flex: 1; margin-left: 170px; padding: 2rem;">

@@ -125,5 +125,20 @@ class DatabaseSeeder extends Seeder
         foreach ($courses as $course) {
             Kursus::create($course);
         }
+
+        // Buat enrollment (kursus_pelajar) untuk testing
+        $pelajars = User::where('peran', 'pelajar')->get();
+        $kursuses = Kursus::all();
+
+        foreach ($pelajars as $p) {
+            // Setiap pelajar mendaftar 2-3 kursus
+            $randomCourses = $kursuses->random(rand(2, 3));
+            foreach ($randomCourses as $course) {
+                $p->enrolledCourses()->attach($course->id, [
+                    'status' => 'terdaftar',
+                    'nilai_akhir' => rand(50, 100),
+                ]);
+            }
+        }
     }
 }

@@ -12,36 +12,49 @@
                 <div class="col-md-6">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <form action="{{ isset($mentoring) ? route('admin.mentoring.update', $mentoring['id']) : route('admin.mentoring.store') }}" method="POST">
+                            <form action="{{ isset($mentoring) ? route('admin.mentoring.update', $mentoring->id) : route('admin.mentoring.store') }}" method="POST">
                                 @csrf
+                                @if(isset($mentoring))
+                                @method('POST')
+                                @endif
 
                                 <div class="mb-3">
-                                    <label for="pengajar" class="form-label">Nama Pengajar</label>
-                                    <input type="text" class="form-control" id="pengajar" name="pengajar" value="{{ isset($mentoring) ? $mentoring['pengajar'] : '' }}" required>
+                                    <label for="pengajar_id" class="form-label">Nama Pengajar</label>
+                                    <select class="form-control @error('pengajar_id') is-invalid @enderror" id="pengajar_id" name="pengajar_id" required>
+                                        <option value="">Pilih Pengajar</option>
+                                        @foreach($pengajars as $pengajar)
+                                        <option value="{{ $pengajar->id }}" {{ isset($mentoring) && $mentoring->pengajar_id === $pengajar->id ? 'selected' : '' }}>{{ $pengajar->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('pengajar_id')<span class="invalid-feedback">{{ $message }}</span>@enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="tanggal" class="form-label">Tanggal Mentoring</label>
-                                    <input type="date" class="form-control" id="tanggal" name="tanggal" value="{{ isset($mentoring) ? $mentoring['tanggal'] : '' }}" required>
+                                    <input type="date" class="form-control @error('tanggal') is-invalid @enderror" id="tanggal" name="tanggal" value="{{ isset($mentoring) ? $mentoring->tanggal->format('Y-m-d') : '' }}" required>
+                                    @error('tanggal')<span class="invalid-feedback">{{ $message }}</span>@enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="jam" class="form-label">Jam Mentoring</label>
-                                    <input type="time" class="form-control" id="jam" name="jam" value="{{ isset($mentoring) ? $mentoring['jam'] : '' }}" required>
+                                    <input type="time" class="form-control @error('jam') is-invalid @enderror" id="jam" name="jam" value="{{ isset($mentoring) ? $mentoring->jam : '' }}" required>
+                                    @error('jam')<span class="invalid-feedback">{{ $message }}</span>@enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="status" class="form-label">Status</label>
-                                    <select class="form-control" id="status" name="status" required>
+                                    <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
                                         <option value="">Pilih Status</option>
-                                        <option value="Belum" {{ isset($mentoring) && $mentoring['status'] === 'Belum' ? 'selected' : '' }}>Belum</option>
-                                        <option value="Sudah" {{ isset($mentoring) && $mentoring['status'] === 'Sudah' ? 'selected' : '' }}>Sudah</option>
+                                        <option value="Belum" {{ isset($mentoring) && $mentoring->status === 'Belum' ? 'selected' : '' }}>Belum</option>
+                                        <option value="Sudah" {{ isset($mentoring) && $mentoring->status === 'Sudah' ? 'selected' : '' }}>Sudah</option>
                                     </select>
+                                    @error('status')<span class="invalid-feedback">{{ $message }}</span>@enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="zoom_link" class="form-label">Link Zoom</label>
-                                    <input type="url" class="form-control" id="zoom_link" name="zoom_link" placeholder="https://zoom.us/j/..." value="{{ isset($mentoring) ? $mentoring['zoom_link'] : '' }}" required>
+                                    <input type="url" class="form-control @error('zoom_link') is-invalid @enderror" id="zoom_link" name="zoom_link" placeholder="https://zoom.us/j/..." value="{{ isset($mentoring) ? $mentoring->zoom_link : '' }}">
+                                    @error('zoom_link')<span class="invalid-feedback">{{ $message }}</span>@enderror
                                 </div>
 
                                 <div class="d-flex gap-2">

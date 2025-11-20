@@ -14,104 +14,39 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-sm align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>No</th>
-                            <th>Kursus</th>
-                            <th>Tanggal</th>
-                            <th>Jumlah</th>
-                            <th>Metode</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
+                            <th style="width:5%">No</th>
+                            <th style="width:65%">Kursus</th>
+                            <th style="width:20%" class="text-end text-nowrap">Jumlah</th>
+                            <th style="width:10%" class="text-nowrap">Status</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @if($payments->isEmpty())
                         <tr>
-                            <td>1</td>
-                            <td>Web Development Basics</td>
-                            <td>15 Agustus 2024</td>
-                            <td>Rp. 299.000</td>
-                            <td>Transfer Bank</td>
-                            <td><span class="badge bg-success">Lunas</span></td>
+                            <td colspan="4">Belum ada riwayat pembayaran</td>
+                        </tr>
+                        @else
+                        @foreach($payments as $key => $payment)
+                        <tr>
+                            <td class="align-middle">{{ $key + 1 }}</td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary">Bukti</button>
+                                <div class="text-truncate d-inline-block" style="max-width:360px;">{{ $payment->kursus_nama }}</div>
+                            </td>
+                            <td class="text-end text-nowrap">Rp {{ number_format($payment->harga, 0, ',', '.') }}</td>
+                            <td class="text-nowrap">
+                                <span class="badge bg-success">Lunas</span>
                             </td>
                         </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>PHP Advanced</td>
-                            <td>20 September 2024</td>
-                            <td>Rp. 399.000</td>
-                            <td>E-Wallet</td>
-                            <td><span class="badge bg-success">Lunas</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary">Bukti</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>React JS</td>
-                            <td>10 Oktober 2024</td>
-                            <td>Rp. 449.000</td>
-                            <td>Kartu Kredit</td>
-                            <td><span class="badge bg-success">Lunas</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary">Bukti</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Python Data Science</td>
-                            <td>05 November 2024</td>
-                            <td>Rp. 499.000</td>
-                            <td>Transfer Bank</td>
-                            <td><span class="badge bg-success">Lunas</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary">Bukti</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Laravel</td>
-                            <td>18 November 2024</td>
-                            <td>Rp. 349.000</td>
-                            <td>E-Wallet</td>
-                            <td><span class="badge bg-warning text-dark">Pending</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary">Bukti</button>
-                            </td>
-                        </tr>
+                        @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
 
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <h6 class="text-muted mb-2">Total Pembayaran</h6>
-                            <h3 class="fw-bold text-primary">Rp. 2.095.000</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <h6 class="text-muted mb-2">Pembayaran Lunas</h6>
-                            <h3 class="fw-bold text-success">Rp. 1.746.000</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <h6 class="text-muted mb-2">Menunggu Konfirmasi</h6>
-                            <h3 class="fw-bold text-warning">Rp. 349.000</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Footer cards removed per user request -->
         </div>
     </main>
 </div>

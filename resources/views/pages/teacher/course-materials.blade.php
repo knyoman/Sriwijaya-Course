@@ -132,7 +132,100 @@
                 </div>
             </div>
         </div>
+
+        <!-- Forum Diskusi Section -->
+        <div class="mt-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Forum Diskusi</h5>
+                <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahDiskusi">
+                    <i class="fa-solid fa-plus me-2"></i>Buat Diskusi
+                </button>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Topik Diskusi</th>
+                                <th>Pembuat</th>
+                                <th>Balasan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($course->diskusi as $disk)
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ $disk->judul }}</div>
+                                    <small class="text-muted">{{ Str::limit($disk->konten, 60) }}</small>
+                                </td>
+                                <td>
+                                    <small>{{ $disk->pembuat->nama }}</small><br>
+                                    <small class="text-muted">{{ $disk->created_at->diffForHumans() }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ $disk->jumlah_balasan }}</span>
+                                </td>
+                                <td style="width: 150px;">
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('teacher.courses.diskusi.show', [$course->id, $disk->id]) }}" class="btn btn-sm btn-primary" title="Lihat Diskusi">
+                                            <i class="fa-solid fa-eye me-1"></i>Lihat
+                                        </a>
+                                        @if(auth()->id() === $disk->pembuat_id)
+                                        <form action="{{ route('teacher.courses.diskusi.destroy', [$course->id, $disk->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus diskusi ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    <i class="fa-solid fa-inbox me-2"></i>Belum ada diskusi. Mulai diskusi pertama!
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </main>
+</div>
+
+<!-- Modal Tambah Diskusi -->
+<div class="modal fade" id="modalTambahDiskusi" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buat Topik Diskusi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('teacher.courses.diskusi.store', $course->id) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="judul_disk" class="form-label">Judul Diskusi</label>
+                        <input type="text" class="form-control" id="judul_disk" name="judul" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="konten_disk" class="form-label">Pertanyaan/Topik</label>
+                        <textarea class="form-control" id="konten_disk" name="konten" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Buat Diskusi</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Detail Materi (Loop untuk setiap materi) -->
@@ -214,8 +307,6 @@
                             <select class="form-select" name="tipe_konten" required>
                                 <option value="video" {{ $mat->tipe_konten === 'video' ? 'selected' : '' }}>Video</option>
                                 <option value="dokumen" {{ $mat->tipe_konten === 'dokumen' ? 'selected' : '' }}>Dokumen</option>
-                                <option value="kuis" {{ $mat->tipe_konten === 'kuis' ? 'selected' : '' }}>Kuis</option>
-                                <option value="live_session" {{ $mat->tipe_konten === 'live_session' ? 'selected' : '' }}>Live Session</option>
                             </select>
                         </div>
                     </div>
@@ -268,8 +359,6 @@
                                 <option value="">-- Pilih Tipe --</option>
                                 <option value="video">Video</option>
                                 <option value="dokumen">Dokumen</option>
-                                <option value="kuis">Kuis</option>
-                                <option value="live_session">Live Session</option>
                             </select>
                         </div>
                     </div>

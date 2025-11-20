@@ -93,39 +93,39 @@
     <div class="container">
         <h2 class="text-center mb-5 fw-bold">Kursus Populer</h2>
         <div class="row g-4">
+            @forelse($courses->take(3) as $course)
             <div class="col-md-4">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Course 1">
+                    <img src="{{ $course->image ?: 'https://via.placeholder.com/400x250?text=' . urlencode($course->nama) }}" class="card-img-top" alt="{{ $course->nama }}" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
-                        <h5 class="card-title fw-bold">Web Development</h5>
-                        <p class="card-text">Belajar HTML, CSS, JavaScript dan Framework modern.</p>
-                        <p class="text-muted small">⭐ 4.8 (320 reviews)</p>
-                        <a href="{{ route('courses') }}" class="btn btn-primary w-100">Lihat Detail</a>
+                        <h5 class="card-title fw-bold">{{ $course->nama }}</h5>
+                        <p class="card-text">{{ Str::limit($course->deskripsi, 100) }}</p>
+                        <p class="text-danger fw-bold">Rp {{ number_format($course->harga, 0, ',', '.') }}</p>
+                        <p class="text-muted small">Durasi: <strong>{{ $course->durasi_jam }} jam</strong></p>
+                        @auth
+                        @if(auth()->user()->peran === 'pelajar')
+                        @if(auth()->user()->enrolledCourses()->where('kursus_id', $course->id)->exists())
+                        <a href="{{ route('student.course-learn', $course->id) }}" class="btn btn-success w-100">Lanjutkan Belajar</a>
+                        @else
+                        <form action="{{ route('student.course.enroll', $course->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary w-100">Daftar Sekarang</button>
+                        </form>
+                        @endif
+                        @else
+                        <a href="{{ route('course.detail', $course->slug) }}" class="btn btn-primary w-100">Lihat Detail</a>
+                        @endif
+                        @else
+                        <a href="{{ route('login') }}" class="btn btn-primary w-100">Daftar Sekarang</a>
+                        @endauth
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Course 2">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Digital Marketing</h5>
-                        <p class="card-text">Kuasai strategi marketing digital untuk bisnis online.</p>
-                        <p class="text-muted small">⭐ 4.7 (250 reviews)</p>
-                        <a href="{{ route('courses') }}" class="btn btn-primary w-100">Lihat Detail</a>
-                    </div>
-                </div>
+            @empty
+            <div class="col-12">
+                <div class="alert alert-info text-center">Tidak ada kursus yang tersedia saat ini</div>
             </div>
-            <div class="col-md-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Course 3">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">UI/UX Design</h5>
-                        <p class="card-text">Desain interface yang menarik dan user experience terbaik.</p>
-                        <p class="text-muted small">⭐ 4.9 (410 reviews)</p>
-                        <a href="{{ route('courses') }}" class="btn btn-primary w-100">Lihat Detail</a>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
         <div class="text-center mt-5">
             <a href="{{ route('courses') }}" class="btn btn-primary btn-lg">Lihat Semua Kursus</a>

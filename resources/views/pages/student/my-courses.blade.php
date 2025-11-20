@@ -13,92 +13,30 @@
                 <p class="text-muted">Daftar kursus yang sedang Anda ikuti</p>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">Web Development Basics</h5>
-                            <p class="card-text text-muted">Belajar dasar-dasar web development</p>
-                            <div class="mb-3">
-                                <small class="d-block mb-2 text-muted">Progress: 70%</small>
-                                <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar bg-primary" style="width: 70%"></div>
-                                </div>
-                            </div>
-                            <small class="text-muted d-block mb-2">Instruktur: Doni Santoso</small>
-                            <button class="btn btn-sm btn-outline-primary">Lanjut Belajar</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">PHP Advanced</h5>
-                            <p class="card-text text-muted">Master PHP untuk backend development</p>
-                            <div class="mb-3">
-                                <small class="d-block mb-2 text-muted">Progress: 50%</small>
-                                <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar bg-success" style="width: 50%"></div>
-                                </div>
-                            </div>
-                            <small class="text-muted d-block mb-2">Instruktur: Budi Santoso</small>
-                            <button class="btn btn-sm btn-outline-primary">Lanjut Belajar</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">React JS</h5>
-                            <p class="card-text text-muted">Framework JavaScript modern</p>
-                            <div class="mb-3">
-                                <small class="d-block mb-2 text-muted">Progress: 35%</small>
-                                <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar bg-warning" style="width: 35%"></div>
-                                </div>
-                            </div>
-                            <small class="text-muted d-block mb-2">Instruktur: Rina Wijaya</small>
-                            <button class="btn btn-sm btn-outline-primary">Lanjut Belajar</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">Python Data Science</h5>
-                            <p class="card-text text-muted">Data science dengan Python</p>
-                            <div class="mb-3">
-                                <small class="d-block mb-2 text-muted">Progress: 85%</small>
-                                <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar bg-info" style="width: 85%"></div>
-                                </div>
-                            </div>
-                            <small class="text-muted d-block mb-2">Instruktur: Ahmad Pratama</small>
-                            <button class="btn btn-sm btn-outline-primary">Lanjut Belajar</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">Laravel</h5>
-                            <p class="card-text text-muted">Web framework Laravel</p>
-                            <div class="mb-3">
-                                <small class="d-block mb-2 text-muted">Progress: 25%</small>
-                                <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar" style="width: 25%; background-color: #6f42c1;"></div>
-                                </div>
-                            </div>
-                            <small class="text-muted d-block mb-2">Instruktur: Sinta Kusuma</small>
-                            <button class="btn btn-sm btn-outline-primary">Lanjut Belajar</button>
-                        </div>
-                    </div>
-                </div>
+            @if($myCourses->isEmpty())
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>Belum ada kursus!</strong> Anda belum mendaftar ke kursus manapun.
+                <a href="{{ route('student.courses') }}" class="alert-link">Daftar kursus sekarang</a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            @else
+            <div class="row">
+                @foreach($myCourses as $course)
+                <div class="col-md-6 mb-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <img src="{{ $course->image ?: 'https://via.placeholder.com/400x200?text=' . urlencode($course->nama) }}" class="card-img-top" alt="{{ $course->nama }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">{{ $course->nama }}</h5>
+                            <p class="card-text text-muted">{{ Str::limit($course->deskripsi, 100) }}</p>
+                            <small class="text-muted d-block mb-2">Instruktur: {{ $course->pengajar->nama ?? 'N/A' }}</small>
+                            <small class="text-muted d-block mb-3">Durasi: {{ $course->durasi_jam ?? 0 }} jam</small>
+                            <a href="{{ route('student.course-learn', $course->id) }}" class="btn btn-sm btn-primary w-100">Lanjut Belajar</a>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
         </div>
     </main>
 </div>

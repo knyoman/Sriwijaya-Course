@@ -14,7 +14,7 @@
 
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <div class="card border-0 shadow-lg">
+                    <div id="certificate-area" class="card border-0 shadow-lg">
                         <div class="card-body p-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
                             <h1 class="fw-bold mb-3">SERTIFIKAT</h1>
                             <p class="fs-5 mb-4">Penghargaan atas Pencapaian Akademik</p>
@@ -44,9 +44,25 @@
                         <button class="btn btn-primary me-2" onclick="window.print()">
                             <i class="fa-solid fa-print me-2"></i> Cetak
                         </button>
-                        <a href="#" class="btn btn-outline-primary">
-                            <i class="fa-solid fa-download me-2"></i> Unduh PDF
-                        </a>
+                        <button class="btn btn-warning" onclick="downloadCertificateImage()">
+                            <i class="fa-solid fa-download me-2"></i> Unduh Gambar
+                        </button>
+                        @push('scripts')
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+                        <script>
+                            function downloadCertificateImage() {
+                                const certArea = document.getElementById('certificate-area');
+                                html2canvas(certArea, {
+                                    backgroundColor: null
+                                }).then(function(canvas) {
+                                    const link = document.createElement('a');
+                                    link.download = 'sertifikat.png';
+                                    link.href = canvas.toDataURL('image/png');
+                                    link.click();
+                                });
+                            }
+                        </script>
+                        @endpush
                     </div>
 
                     <div class="card border-0 shadow-sm mt-4">

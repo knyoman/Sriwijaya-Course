@@ -15,7 +15,6 @@
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Kursus</th>
                             <th>Tanggal & Waktu</th>
                             <th>Peserta</th>
                             <th>Status</th>
@@ -23,39 +22,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                        $courses = [
-                        'Web Development Basics',
-                        'PHP Advanced',
-                        'React Fundamentals',
-                        'Database Design',
-                        'API Development'
-                        ];
-                        @endphp
-                        @for($i=1; $i<=5; $i++)
-                            <tr>
-                            <td class="fw-bold">{{ $courses[$i-1] }}</td>
+                        @forelse($mentorings as $mentoring)
+                        <tr>
                             <td>
                                 <i class="fa-solid fa-calendar me-2"></i>
-                                {{ now()->addDays($i)->format('d M Y') }} - 14:00
+                                {{ $mentoring->tanggal->format('d M Y') }} - {{ $mentoring->jam }}
                             </td>
                             <td>
-                                <span class="badge bg-light text-dark">{{ 5 + $i }} orang</span>
+                                <span class="badge bg-light text-dark">{{ $mentoring->peserta ?? 0 }} orang</span>
                             </td>
                             <td>
-                                @if($i % 2 == 0)
-                                <span class="badge bg-warning">Akan Datang</span>
-                                @else
-                                <span class="badge bg-success">Selesai</span>
-                                @endif
+                                <span class="badge {{ $mentoring->status === 'Sudah' ? 'bg-success' : 'bg-warning' }}">
+                                    {{ $mentoring->status === 'Sudah' ? 'Selesai' : 'Akan Datang' }}
+                                </span>
                             </td>
                             <td>
-                                <a href="https://zoom.us/meeting" class="btn btn-sm btn-primary" target="_blank">
+                                @if($mentoring->zoom_link)
+                                <a href="{{ $mentoring->zoom_link }}" class="btn btn-sm btn-primary" target="_blank">
                                     <i class="fa-solid fa-video me-1"></i>Bergabung
                                 </a>
+                                @else
+                                <span class="text-muted small">Belum ada link</span>
+                                @endif
                             </td>
-                            </tr>
-                            @endfor
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Belum ada jadwal mentoring</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

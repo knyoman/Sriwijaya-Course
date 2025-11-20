@@ -26,9 +26,5 @@
             <i class="fa-regular fa-calendar me-2" style="width: 20px;"></i>
             <span>Entry Jadwal Mentoring</span>
         </a>
-        <a href="{{ route('admin.certificates') }}" class="list-group-item list-group-item-action d-flex align-items-center" style="border: none; padding: 0.75rem 1rem; font-size: 0.95rem;">
-            <i class="fa-solid fa-award me-2" style="width: 20px;"></i>
-            <span>Sertifikat</span>
-        </a>
     </div>
 </div>

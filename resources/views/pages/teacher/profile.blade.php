@@ -1,117 +1,229 @@
 @extends('layouts.app')
-@section('title', 'Profil Pengajar')
+@section('title', 'Profil Pengajar - Kursus Sriwijaya')
 @section('content')
 <div class="d-flex">
     @include('components.sidebar-teacher')
-    <main class="flex-fill p-4">
-        <div class="mb-4">
-            <h5 class="mb-1">Profil Saya</h5>
-            <p class="text-muted small mb-0">Kelola informasi profil Anda</p>
-        </div>
+    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+        <div class="container-fluid">
+            <!-- Alert Messages -->
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
 
-        <div class="row">
-            <!-- Profile Info -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <img src="https://via.placeholder.com/120" alt="Avatar" class="rounded-circle mb-3" width="120">
-                        <h6 class="fw-bold mb-1">{{ auth()->user()->nama }}</h6>
-                        <p class="text-muted small mb-3">Pengajar</p>
-                        <div class="mb-3">
-                            <small class="text-muted">Email:</small>
-                            <p class="small mb-0">{{ auth()->user()->email }}</p>
+            @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong>Terjadi Kesalahan!</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
+
+            <div class="mb-4">
+                <h1 class="fw-bold mb-1">
+                    <i class="fas fa-user-circle me-2" style="color: #2563eb;"></i>Profil Pengajar
+                </h1>
+                <p class="text-muted">Kelola dan perbarui informasi profil Anda</p>
+            </div>
+
+            <div class="row">
+                <!-- Card Profil Singkat -->
+                <div class="col-md-4 mb-4">
+                    <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <div class="card-body text-center py-5">
+                            <div class="mb-3">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}&background=random&color=fff&size=150"
+                                    alt="Avatar" class="rounded-circle border-4" style="border-color: rgba(255,255,255,0.3);" width="120">
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ auth()->user()->nama }}</h5>
+                            <p class="opacity-75 small mb-0">{{ auth()->user()->email }}</p>
+                            <hr class="opacity-25 my-3">
+                            <div class="text-start">
+                                <small class="d-block opacity-75"><i class="fas fa-id-card me-2"></i>Username: <strong>{{ auth()->user()->username }}</strong></small>
+                                <small class="d-block opacity-75 mt-2"><i class="fas fa-chalkboard-user me-2"></i>Peran: <strong class="text-uppercase">{{ auth()->user()->peran }}</strong></small>
+                                <small class="d-block opacity-75 mt-2"><i class="fas fa-calendar me-2"></i>Bergabung: <strong>{{ auth()->user()->created_at->format('d M Y') }}</strong></small>
+                            </div>
                         </div>
-                        <button class="btn btn-sm btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modalEditFoto">
-                            <i class="fa-solid fa-camera me-1"></i>Ubah Foto
-                        </button>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <!-- Informasi Pribadi -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 py-3 d-flex align-items-center">
+                            <i class="fas fa-user me-2" style="color: #2563eb; font-size: 1.2em;"></i>
+                            <h5 class="fw-bold mb-0">Informasi Pribadi</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ route('teacher.profile.update') }}" method="POST">
+                                @csrf
+                                @method('PUT')
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-500">Nama Lengkap</label>
+                                        <input type="text" class="form-control @error('nama') is-invalid @enderror"
+                                            name="nama" value="{{ old('nama', auth()->user()->nama) }}" required>
+                                        @error('nama') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-500">Username</label>
+                                        <input type="text" class="form-control" value="{{ auth()->user()->username }}" disabled>
+                                        <small class="text-muted">Username tidak dapat diubah</small>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-500">Email</label>
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                            name="email" value="{{ old('email', auth()->user()->email) }}" required>
+                                        @error('email') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-500">Nomor Telepon</label>
+                                        <input type="tel" class="form-control @error('nomor_telepon') is-invalid @enderror"
+                                            name="nomor_telepon" value="{{ old('nomor_telepon', auth()->user()->nomor_telepon ?? '') }}"
+                                            placeholder="08xx xxxx xxxx">
+                                        @error('nomor_telepon') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-500">Tanggal Lahir</label>
+                                        <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror"
+                                            name="tanggal_lahir" value="{{ old('tanggal_lahir', auth()->user()->tanggal_lahir ?? '') }}">
+                                        @error('tanggal_lahir') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-500">Jenis Kelamin</label>
+                                        <select class="form-select @error('jenis_kelamin') is-invalid @enderror" name="jenis_kelamin">
+                                            <option value="">-- Pilih --</option>
+                                            <option value="laki-laki" {{ old('jenis_kelamin', auth()->user()->jenis_kelamin ?? '') == 'laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                            <option value="perempuan" {{ old('jenis_kelamin', auth()->user()->jenis_kelamin ?? '') == 'perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                        </select>
+                                        @error('jenis_kelamin') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-500">Keahlian</label>
+                                        <input type="text" class="form-control @error('keahlian') is-invalid @enderror"
+                                            name="keahlian" value="{{ old('keahlian', auth()->user()->keahlian ?? '') }}"
+                                            placeholder="Contoh: Web Development, PHP, JavaScript">
+                                        @error('keahlian') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-500">Sertifikasi</label>
+                                        <input type="text" class="form-control @error('sertifikasi') is-invalid @enderror"
+                                            name="sertifikasi" value="{{ old('sertifikasi', auth()->user()->sertifikasi ?? '') }}"
+                                            placeholder="Contoh: Google Cloud Certified">
+                                        @error('sertifikasi') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-500">Alamat</label>
+                                    <textarea class="form-control @error('alamat') is-invalid @enderror" rows="3"
+                                        name="alamat" placeholder="Masukkan alamat lengkap Anda">{{ old('alamat', auth()->user()->alamat ?? '') }}</textarea>
+                                    @error('alamat') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-500">Biografi / Tentang Saya</label>
+                                    <textarea class="form-control @error('biografi') is-invalid @enderror" rows="4"
+                                        name="biografi" placeholder="Ceritakan tentang pengalaman dan keahlian Anda">{{ old('biografi', auth()->user()->biografi ?? '') }}</textarea>
+                                    @error('biografi') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Simpan Perubahan
+                                    </button>
+                                    <button type="reset" class="btn btn-outline-secondary">
+                                        <i class="fas fa-redo me-2"></i>Reset
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Keamanan Akun -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 py-3 d-flex align-items-center">
+                            <i class="fas fa-lock me-2" style="color: #dc2626; font-size: 1.2em;"></i>
+                            <h5 class="fw-bold mb-0">Keamanan Akun</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                <div>
+                                    <h6 class="fw-bold mb-1">
+                                        <i class="fas fa-key me-2"></i>Password
+                                    </h6>
+                                    <p class="text-muted small mb-0">Ubah password akun Anda secara berkala untuk keamanan maksimal</p>
+                                </div>
+                                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                    <i class="fas fa-edit me-1"></i>Ubah Password
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Profile Details -->
-            <div class="col-md-8 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="fw-bold mb-0">Informasi Profil</h6>
-                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditProfil">
-                            <i class="fa-solid fa-edit me-1"></i>Edit
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <small class="text-muted">Nama Lengkap</small>
-                                <p class="fw-bold">{{ auth()->user()->nama }}</p>
+            <!-- Stats -->
+            <div class="row mt-4">
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <div class="text-primary fs-4 mb-2">
+                                <i class="fa-solid fa-book"></i>
                             </div>
-                            <div class="col-md-6">
-                                <small class="text-muted">Email</small>
-                                <p class="fw-bold">{{ auth()->user()->email }}</p>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <small class="text-muted">No. Telepon</small>
-                                <p class="fw-bold">082123456789</p>
-                            </div>
-                            <div class="col-md-6">
-                                <small class="text-muted">Keahlian</small>
-                                <p class="fw-bold">Web Development, PHP</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <small class="text-muted">Alamat</small>
-                                <p class="fw-bold">{{ auth()->user()->alamat ?? '-' }}</p>
-                            </div>
+                            <small class="text-muted d-block mb-2">Kursus Aktif</small>
+                            <h5 class="fw-bold">{{ $kursusAktifCount ?? 0 }}</h5>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="row">
-            <div class="col-md-3 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <div class="text-primary fs-4 mb-2">
-                            <i class="fa-solid fa-book"></i>
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <div class="text-success fs-4 mb-2">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <small class="text-muted d-block mb-2">Total Peserta</small>
+                            <h5 class="fw-bold">{{ $totalPeserta ?? 0 }}</h5>
                         </div>
-                        <small class="text-muted d-block mb-2">Kursus Aktif</small>
-                        <h5 class="fw-bold">3</h5>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <div class="text-success fs-4 mb-2">
-                            <i class="fa-solid fa-users"></i>
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <div class="text-warning fs-4 mb-2">
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <small class="text-muted d-block mb-2">Rating</small>
+                            <h5 class="fw-bold">{{ $rating ? ($rating . '/5') : '-' }}</h5>
                         </div>
-                        <small class="text-muted d-block mb-2">Total Peserta</small>
-                        <h5 class="fw-bold">28</h5>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <div class="text-warning fs-4 mb-2">
-                            <i class="fa-solid fa-star"></i>
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <div class="text-danger fs-4 mb-2">
+                                <i class="fa-solid fa-money-bill"></i>
+                            </div>
+                            <small class="text-muted d-block mb-2">Pendapatan</small>
+                            <h5 class="fw-bold">{{ $pendapatan ?? '-' }}</h5>
                         </div>
-                        <small class="text-muted d-block mb-2">Rating</small>
-                        <h5 class="fw-bold">4.8/5</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <div class="text-danger fs-4 mb-2">
-                            <i class="fa-solid fa-money-bill"></i>
-                        </div>
-                        <small class="text-muted d-block mb-2">Pendapatan</small>
-                        <h5 class="fw-bold">Rp 2.5M</h5>
                     </div>
                 </div>
             </div>
@@ -119,63 +231,114 @@
     </main>
 </div>
 
-<!-- Modal Edit Foto -->
-<div class="modal fade" id="modalEditFoto" tabindex="-1">
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Ubah Foto Profil</h5>
+        <div class="modal-content border-0">
+            <div class="modal-header bg-light border-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-key me-2"></i>Ubah Password
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form>
+            <form action="{{ route('teacher.profile.update-password') }}" method="POST">
+                @csrf
+                @method('PUT')
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Pilih Foto</label>
-                        <input type="file" class="form-control" accept="image/*" required>
+                        <label class="form-label fw-500">Password Saat Ini</label>
+                        <input type="password" class="form-control @error('password_lama') is-invalid @enderror"
+                            name="password_lama" placeholder="Masukkan password saat ini" required>
+                        @error('password_lama') <span class="invalid-feedback d-block">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-500">Password Baru</label>
+                        <input type="password" class="form-control @error('password_baru') is-invalid @enderror"
+                            name="password_baru" placeholder="Masukkan password baru (min 8 karakter)" required>
+                        @error('password_baru') <span class="invalid-feedback d-block">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-500">Konfirmasi Password Baru</label>
+                        <input type="password" class="form-control @error('password_baru_confirmation') is-invalid @enderror"
+                            name="password_baru_confirmation" placeholder="Konfirmasi password baru" required>
+                        @error('password_baru_confirmation') <span class="invalid-feedback d-block">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="alert alert-info small mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Password harus minimal 8 karakter dan mengandung kombinasi huruf, angka, dan simbol
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-save me-2"></i>Ubah Password
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal Edit Profil -->
-<div class="modal fade" id="modalEditProfil" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Profil</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-control" value="{{ auth()->user()->nama }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">No. Telepon</label>
-                        <input type="tel" class="form-control" value="082123456789">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Keahlian</label>
-                        <input type="text" class="form-control" value="Web Development, PHP">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Alamat</label>
-                        <textarea class="form-control" rows="3">{{ auth()->user()->alamat }}</textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<style>
+    .form-label {
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1.5px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0.6rem 1.2rem;
+    }
+
+    .btn-primary {
+        background-color: #2563eb;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #1d4ed8;
+    }
+
+    .btn-danger {
+        background-color: #dc2626;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        background-color: #b91c1c;
+    }
+
+    .card {
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .card-header {
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .modal-content {
+        border-radius: 12px;
+    }
+</style>
 @endsection

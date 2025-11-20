@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class LoginController extends Controller
@@ -33,11 +34,23 @@ class LoginController extends Controller
             ])->onlyInput('email');
         }
 
-        // Cek password menggunakan hash
-        if (!\Hash::check($credentials['password'], $user->kata_sandi)) {
-            return back()->withErrors([
-                'password' => 'Password yang Anda masukkan salah',
-            ])->onlyInput('email');
+        // Cek password
+        if ($user->isPlainTextPassword()) {
+            // Handle plain text password (backward compatibility)
+            if ($credentials['password'] !== $user->kata_sandi) {
+                return back()->withErrors([
+                    'password' => 'Password yang Anda masukkan salah',
+                ])->onlyInput('email');
+            }
+            // Auto-hash plain text password untuk security
+            $user->update(['kata_sandi' => Hash::make($credentials['password'])]);
+        } else {
+            // Handle Bcrypt hashed password (normal)
+            if (!Hash::check($credentials['password'], $user->kata_sandi)) {
+                return back()->withErrors([
+                    'password' => 'Password yang Anda masukkan salah',
+                ])->onlyInput('email');
+            }
         }
 
         // Login user

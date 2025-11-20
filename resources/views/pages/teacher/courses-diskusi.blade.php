@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5>Forum Diskusi - {{ $course->nama }}</h5>
-                <a href="{{ route('admin.courses.detail', $course->id) }}" class="btn btn-secondary btn-sm">Kembali</a>
+                <a href="{{ route('teacher.course-materials', $course->id) }}" class="btn btn-secondary btn-sm">Kembali</a>
             </div>
 
             <div class="row">
@@ -26,7 +26,7 @@
                             <div class="card shadow-sm h-100">
                                 <div class="card-body">
                                     <h6 class="card-title mb-2">
-                                        <a href="{{ route('teacher.courses.diskusi.detail', [$course->id, $diskusi->id]) }}" class="text-decoration-none">
+                                        <a href="{{ route('teacher.courses.diskusi.show', [$course->id, $diskusi->id]) }}" class="text-decoration-none">
                                             {{ $diskusi->judul }}
                                         </a>
                                     </h6>
@@ -42,7 +42,7 @@
                                     <small class="text-muted d-block mt-2">{{ $diskusi->created_at->diffForHumans() }}</small>
                                 </div>
                                 <div class="card-footer bg-light">
-                                    <a href="{{ route('teacher.courses.diskusi.detail', [$course->id, $diskusi->id]) }}" class="btn btn-sm btn-outline-primary w-100">
+                                    <a href="{{ route('teacher.courses.diskusi.show', [$course->id, $diskusi->id]) }}" class="btn btn-sm btn-outline-primary w-100">
                                         Lihat Diskusi
                                     </a>
                                 </div>

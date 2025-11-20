@@ -23,10 +23,5 @@
             <i class="fa-solid fa-user me-3"></i>
             Profil Akun
         </a>
-
-        <a href="{{ route('teacher.certificates') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-            <i class="fa-solid fa-award me-3"></i>
-            Sertifikat
-        </a>
     </div>
 </div>

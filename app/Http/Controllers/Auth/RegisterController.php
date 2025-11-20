@@ -24,7 +24,7 @@ class RegisterController extends Controller
 
         auth()->login($user);
 
-        return redirect('/dashboard');
+        return redirect('/dashboard/pelajar');
     }
 
     protected function validator(array $data)
@@ -34,7 +34,6 @@ class RegisterController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:pengguna'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'peran' => ['required', 'string', 'in:pelajar,pengajar,admin'],
             'alamat' => ['nullable', 'string', 'max:500'],
         ]);
     }
@@ -46,7 +45,7 @@ class RegisterController extends Controller
             'nama' => $data['nama'],
             'email' => $data['email'],
             'kata_sandi' => Hash::make($data['password']),
-            'peran' => $data['peran'],
+            'peran' => 'pelajar',
             'alamat' => $data['alamat'] ?? null,
         ]);
     }

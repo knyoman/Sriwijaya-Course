@@ -67,6 +67,14 @@ class Kursus extends Model
     }
 
     /**
+     * Relationship: Kursus has many Diskusi
+     */
+    public function diskusi()
+    {
+        return $this->hasMany(Diskusi::class, 'kursus_id');
+    }
+
+    /**
      * Mutator: Auto generate slug from nama
      */
     protected static function boot()

@@ -25,7 +25,7 @@
                                     <small class="text-muted">{{ $diskusi->jumlah_balasan }} balasan</small>
                                 </div>
                                 @if(auth()->id() === $diskusi->pembuat_id)
-                                <form action="{{ route('teacher.courses.diskusi.delete', [$course->id, $diskusi->id]) }}" method="POST" style="display: inline;">
+                                <form action="{{ route('teacher.courses.diskusi.destroy', [$course->id, $diskusi->id]) }}" method="POST" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus diskusi ini?')">Hapus</button>
@@ -58,7 +58,7 @@
                                         <small class="text-muted ms-2">{{ $reply->created_at->format('d M Y H:i') }}</small>
                                     </div>
                                     @if(auth()->id() === $reply->pembuat_id)
-                                    <form action="{{ route('teacher.courses.diskusi.balasan.delete', [$course->id, $diskusi->id, $reply->id]) }}" method="POST" style="display: inline;">
+                                    <form action="{{ route('teacher.courses.diskusi.balasan.destroy', [$course->id, $diskusi->id, $reply->id]) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus balasan?')">Hapus</button>

@@ -47,10 +47,6 @@
                                 <span class="badge bg-danger">Video</span>
                                 @elseif($materi->tipe_konten === 'dokumen')
                                 <span class="badge bg-info">Dokumen</span>
-                                @elseif($materi->tipe_konten === 'kuis')
-                                <span class="badge bg-warning">Kuis</span>
-                                @else
-                                <span class="badge bg-success">Live Session</span>
                                 @endif
                             </td>
                             <td>{{ $materi->durasi_menit ?? '-' }} menit</td>
@@ -90,8 +86,6 @@
                                                     <select class="form-control" name="tipe_konten" required>
                                                         <option value="video" {{ $materi->tipe_konten === 'video' ? 'selected' : '' }}>Video</option>
                                                         <option value="dokumen" {{ $materi->tipe_konten === 'dokumen' ? 'selected' : '' }}>Dokumen</option>
-                                                        <option value="kuis" {{ $materi->tipe_konten === 'kuis' ? 'selected' : '' }}>Kuis</option>
-                                                        <option value="live_session" {{ $materi->tipe_konten === 'live_session' ? 'selected' : '' }}>Live Session</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
@@ -267,8 +261,6 @@
                                 <option value="">Pilih Tipe Konten</option>
                                 <option value="video">Video</option>
                                 <option value="dokumen">Dokumen</option>
-                                <option value="kuis">Kuis</option>
-                                <option value="live_session">Live Session</option>
                             </select>
                             @error('tipe_konten')
                             <div class="invalid-feedback">{{ $message }}</div>

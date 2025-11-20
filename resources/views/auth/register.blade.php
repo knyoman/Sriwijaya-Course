@@ -30,17 +30,6 @@
             </div>
 
             <div class="form-group mb-3">
-                <label for="peran" class="form-label">Peran</label>
-                <select id="peran" name="peran" class="form-control @error('peran') is-invalid @enderror" required>
-                    <option value="">Pilih peran</option>
-                    <option value="pelajar" {{ old('peran') == 'pelajar' ? 'selected' : '' }}>Pelajar</option>
-                    <option value="pengajar" {{ old('peran') == 'pengajar' ? 'selected' : '' }}>Pengajar</option>
-                    <option value="admin" {{ old('peran') == 'admin' ? 'selected' : '' }}>Admin</option>
-                </select>
-                @error('peran') <span class="invalid-feedback"><strong>{{ $message }}</strong></span> @enderror
-            </div>
-
-            <div class="form-group mb-3">
                 <label for="alamat" class="form-label">Alamat</label>
                 <textarea id="alamat" name="alamat" class="form-control @error('alamat') is-invalid @enderror" rows="2">{{ old('alamat') }}</textarea>
                 @error('alamat') <span class="invalid-feedback"><strong>{{ $message }}</strong></span> @enderror

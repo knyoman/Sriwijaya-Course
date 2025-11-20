@@ -15,7 +15,7 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-body text-center">
                         <div class="fw-bold small text-muted mb-2">Jumlah Kursus</div>
-                        <div class="display-6 fw-bold text-primary">3</div>
+                        <div class="display-6 fw-bold text-primary">{{ $kursusCount ?? 0 }}</div>
                         <small class="text-muted">Kursus Aktif</small>
                     </div>
                 </div>
@@ -24,7 +24,7 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-body text-center">
                         <div class="fw-bold small text-muted mb-2">Jumlah Pelajar</div>
-                        <div class="display-6 fw-bold text-success">28</div>
+                        <div class="display-6 fw-bold text-success">{{ $totalPelajar ?? 0 }}</div>
                         <small class="text-muted">Peserta Terdaftar</small>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-body text-center">
                         <div class="fw-bold small text-muted mb-2">Jadwal Mentoring</div>
-                        <div class="display-6 fw-bold text-warning">5</div>
+                        <div class="display-6 fw-bold text-warning">{{ $mentoringUpcoming ?? 0 }}</div>
                         <small class="text-muted">Sesi Mendatang</small>
                     </div>
                 </div>

@@ -24,97 +24,30 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                        $mentorings = [
-                        [
-                        'id' => 1,
-                        'pengajar' => 'Ahmad Sugiarto',
-                        'tanggal' => '2025-12-01',
-                        'jam' => '09:00',
-                        'status' => 'Belum',
-                        'zoom_link' => 'https://zoom.us/j/1234567890'
-                        ],
-                        [
-                        'id' => 2,
-                        'pengajar' => 'Siti Nurhaliza',
-                        'tanggal' => '2025-12-02',
-                        'jam' => '10:00',
-                        'status' => 'Belum',
-                        'zoom_link' => 'https://zoom.us/j/1234567891'
-                        ],
-                        [
-                        'id' => 3,
-                        'pengajar' => 'Budi Santoso',
-                        'tanggal' => '2025-12-03',
-                        'jam' => '14:00',
-                        'status' => 'Belum',
-                        'zoom_link' => 'https://zoom.us/j/1234567892'
-                        ],
-                        [
-                        'id' => 4,
-                        'pengajar' => 'Rina Wijaya',
-                        'tanggal' => '2025-12-04',
-                        'jam' => '15:00',
-                        'status' => 'Sudah',
-                        'zoom_link' => 'https://zoom.us/j/1234567893'
-                        ],
-                        [
-                        'id' => 5,
-                        'pengajar' => 'Hendra Kusuma',
-                        'tanggal' => '2025-12-05',
-                        'jam' => '09:30',
-                        'status' => 'Sudah',
-                        'zoom_link' => 'https://zoom.us/j/1234567894'
-                        ],
-                        [
-                        'id' => 6,
-                        'pengajar' => 'Tika Maharani',
-                        'tanggal' => '2025-12-06',
-                        'jam' => '11:00',
-                        'status' => 'Sudah',
-                        'zoom_link' => 'https://zoom.us/j/1234567895'
-                        ],
-                        [
-                        'id' => 7,
-                        'pengajar' => 'Reza Pratama',
-                        'tanggal' => '2025-12-07',
-                        'jam' => '13:00',
-                        'status' => 'Sudah',
-                        'zoom_link' => 'https://zoom.us/j/1234567896'
-                        ],
-                        [
-                        'id' => 8,
-                        'pengajar' => 'Dewi Lestari',
-                        'tanggal' => '2025-12-08',
-                        'jam' => '16:00',
-                        'status' => 'Sudah',
-                        'zoom_link' => 'https://zoom.us/j/1234567897'
-                        ],
-                        [
-                        'id' => 9,
-                        'pengajar' => 'Farhan Maulana',
-                        'tanggal' => '2025-12-09',
-                        'jam' => '10:30',
-                        'status' => 'Sudah',
-                        'zoom_link' => 'https://zoom.us/j/1234567898'
-                        ]
-                        ];
-                        @endphp
-
-                        @foreach($mentorings as $mentoring)
+                        @forelse($mentorings as $mentoring)
                         <tr>
-                            <td>{{ $mentoring['pengajar'] }}</td>
-                            <td>{{ \Carbon\Carbon::parse($mentoring['tanggal'])->format('d M Y') }} {{ $mentoring['jam'] }}</td>
+                            <td>{{ $mentoring->pengajar->nama }}</td>
+                            <td>{{ $mentoring->tanggal->format('d M Y') }} {{ $mentoring->jam }}</td>
                             <td>
-                                <span class="badge {{ $mentoring['status'] === 'Sudah' ? 'bg-success' : 'bg-warning' }}">{{ $mentoring['status'] }}</span>
+                                <span class="badge {{ $mentoring->status === 'Sudah' ? 'bg-success' : 'bg-warning' }}">{{ $mentoring->status }}</span>
                             </td>
                             <td>
-                                <a href="{{ $mentoring['zoom_link'] }}" target="_blank" class="btn btn-info btn-sm me-2">Link Zoom</a>
-                                <a href="{{ route('admin.mentoring.edit', $mentoring['id']) }}" class="btn btn-secondary btn-sm me-2">Edit</a>
-                                <a href="{{ route('admin.mentoring.delete', $mentoring['id']) }}" class="btn btn-danger btn-sm" onclick="return confirm('Hapus jadwal ini?')">Hapus</a>
+                                @if($mentoring->zoom_link)
+                                <a href="{{ $mentoring->zoom_link }}" target="_blank" class="btn btn-info btn-sm me-2">Link Zoom</a>
+                                @endif
+                                <a href="{{ route('admin.mentoring.edit', $mentoring->id) }}" class="btn btn-secondary btn-sm me-2">Edit</a>
+                                <form action="{{ route('admin.mentoring.destroy', $mentoring->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus jadwal ini?')">Hapus</button>
+                                </form>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="4" class="text-center">Belum ada jadwal mentoring</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

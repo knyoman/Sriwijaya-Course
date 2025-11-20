@@ -10,9 +10,13 @@
             <i class="fa-solid fa-gauge-high me-2" style="color: #007bff; width: 20px;"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ route('student.courses') }}" class="list-group-item list-group-item-action d-flex align-items-center" style="border: none; padding: 0.75rem 1rem; font-size: 0.95rem;">
+        <a href="{{ route('student.my-courses') }}" class="list-group-item list-group-item-action d-flex align-items-center" style="border: none; padding: 0.75rem 1rem; font-size: 0.95rem;">
             <i class="fa-solid fa-book me-2" style="width: 20px;"></i>
             <span>My Kursus</span>
+        </a>
+        <a href="{{ route('student.courses') }}" class="list-group-item list-group-item-action d-flex align-items-center" style="border: none; padding: 0.75rem 1rem; font-size: 0.95rem;">
+            <i class="fa-solid fa-graduation-cap me-2" style="width: 20px;"></i>
+            <span>Cari Kursus</span>
         </a>
         <a href="{{ route('student.certificates') }}" class="list-group-item list-group-item-action d-flex align-items-center" style="border: none; padding: 0.75rem 1rem; font-size: 0.95rem;">
             <i class="fa-solid fa-award me-2" style="width: 20px;"></i>

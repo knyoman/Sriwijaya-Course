@@ -11,6 +11,13 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SoalQuizController;
+use App\Http\Controllers\DiskusiController;
+use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\MentoringController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardPelajarController;
+use App\Models\User;
+use App\Models\Kursus;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/courses', [PageController::class, 'courses'])->name('courses');
@@ -34,35 +41,36 @@ Route::middleware('auth')->group(function () {
 
     // Pelajar Dashboard
     Route::middleware('role:pelajar')->group(function () {
-        Route::get('/dashboard/pelajar', function () {
-            return view('dashboard.pelajar');
-        })->name('pelajar.dashboard');
+        Route::get('/dashboard/pelajar', [DashboardPelajarController::class, 'index'])->name('pelajar.dashboard');
 
         // Student Pages
         Route::get('/student/courses', [CourseController::class, 'studentCourses'])->name('student.courses');
+        Route::get('/student/my-courses', [CourseController::class, 'studentMyCourses'])->name('student.my-courses');
         Route::post('/student/courses/{id}/enroll', [CourseController::class, 'studentEnroll'])->name('student.course.enroll');
-        Route::get('/student/my-courses', function () {
-            return view('pages.student.my-courses');
-        })->name('student.my-courses');
-        Route::get('/student/certificates', function () {
-            return view('pages.student.certificates');
-        })->name('student.certificates');
-        Route::get('/student/mentoring', function () {
-            return view('pages.student.mentoring');
-        })->name('student.mentoring');
-        Route::get('/student/payments', function () {
-            return view('pages.student.payments');
-        })->name('student.payments');
-        Route::get('/student/profile', function () {
-            return view('pages.student.profile');
-        })->name('student.profile');
+        Route::get('/student/certificates', [CertificateController::class, 'index'])->name('student.certificates');
+        Route::get('/student/mentoring', [CourseController::class, 'studentMentoring'])->name('student.mentoring');
+        Route::get('/student/payments', [CourseController::class, 'studentPayments'])->name('student.payments');
+        Route::get('/student/profile', [ProfileController::class, 'show'])->name('student.profile');
+        Route::put('/student/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/student/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
         Route::get('/student/course/{id}/learn', [CourseController::class, 'studentCourseLearn'])->name('student.course-learn');
+        Route::get('/student/courses/{courseId}/diskusi', [DiskusiController::class, 'indexStudent'])->name('student.courses.diskusi.index');
+        Route::post('/student/courses/{courseId}/diskusi', [DiskusiController::class, 'storeStudent'])->name('student.courses.diskusi.store');
+        Route::get('/student/courses/{courseId}/diskusi/{diskusiId}', [DiskusiController::class, 'showStudent'])->name('student.courses.diskusi.show');
+        Route::post('/student/courses/{courseId}/diskusi/{diskusiId}/balasan', [DiskusiController::class, 'storeBalasanStudent'])->name('student.courses.diskusi.balasan.store');
+        Route::delete('/student/courses/{courseId}/diskusi/{diskusiId}/balasan/{balasDiskusiId}', [DiskusiController::class, 'destroyBalasanStudent'])->name('student.courses.diskusi.balasan.destroy');
+        Route::get('/student/courses/{courseId}/quiz/{quizId}', [QuizController::class, 'show'])->name('student.quiz.show');
+        Route::post('/student/courses/{courseId}/quiz/{quizId}/submit', [QuizController::class, 'submit'])->name('student.quiz.submit');
         Route::get('/student/quiz', function () {
             return view('pages.student.quiz');
         })->name('student.quiz');
         Route::get('/student/quiz-result', function () {
             return view('pages.student.quiz-result');
         })->name('student.quiz-result');
+        Route::post('/student/courses/{courseId}/quiz/{quizId}/certificate', [CertificateController::class, 'store'])->name('student.certificate.store');
+        Route::get('/student/certificate/{certificateId}', [CertificateController::class, 'show'])->name('student.certificate.show');
+        Route::get('/student/certificate/{certificateId}/download', [CertificateController::class, 'download'])->name('student.certificate.download');
+        Route::get('/student/certificates-list', [CertificateController::class, 'index'])->name('student.certificate.index');
         Route::get('/student/certificate', function () {
             return view('pages.student.certificate');
         })->name('student.certificate');
@@ -74,8 +82,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/teacher/dashboard', [TeacherController::class, 'dashboard'])->name('teacher.dashboard');
         Route::get('/teacher/courses', [CourseController::class, 'teacherCourses'])->name('teacher.courses');
         Route::get('/teacher/courses/{id}/materials', [TeacherController::class, 'courseMaterials'])->name('teacher.course-materials');
-        Route::get('/teacher/mentoring', [TeacherController::class, 'mentoring'])->name('teacher.mentoring');
+        Route::get('/teacher/mentoring', [CourseController::class, 'teacherMentoring'])->name('teacher.mentoring');
         Route::get('/teacher/profile', [TeacherController::class, 'profile'])->name('teacher.profile');
+        Route::put('/teacher/profile', [TeacherController::class, 'updateProfile'])->name('teacher.profile.update');
+        Route::put('/teacher/profile/password', [TeacherController::class, 'updatePassword'])->name('teacher.profile.update-password');
         Route::get('/teacher/certificates', [TeacherController::class, 'courses'])->name('teacher.certificates');
 
         // Materi Routes
@@ -94,16 +104,25 @@ Route::middleware('auth')->group(function () {
         Route::put('/teacher/soal-quiz/{soalId}', [SoalQuizController::class, 'update'])->name('soal-quiz.update');
         Route::delete('/teacher/soal-quiz/{soalId}', [SoalQuizController::class, 'destroy'])->name('soal-quiz.destroy');
 
-        // Diskusi Routes (placeholder - akan ditambahkan controller nanti)
-        Route::get('/teacher/courses/{courseId}/diskusi', function ($courseId) {
-            return view('pages.teacher.courses-diskusi');
-        })->name('teacher.courses.diskusi.index');
+        // Diskusi Routes
+        Route::get('/teacher/courses/{courseId}/diskusi', [DiskusiController::class, 'index'])->name('teacher.courses.diskusi.index');
+        Route::get('/teacher/courses/{courseId}/diskusi/{diskusiId}', [DiskusiController::class, 'show'])->name('teacher.courses.diskusi.show');
+        Route::post('/teacher/courses/{courseId}/diskusi', [DiskusiController::class, 'store'])->name('teacher.courses.diskusi.store');
+        Route::delete('/teacher/courses/{courseId}/diskusi/{diskusiId}', [DiskusiController::class, 'destroy'])->name('teacher.courses.diskusi.destroy');
+        Route::post('/teacher/courses/{courseId}/diskusi/{diskusiId}/balasan', [DiskusiController::class, 'storeBalasan'])->name('teacher.courses.diskusi.balasan.store');
+        Route::delete('/teacher/courses/{courseId}/diskusi/{diskusiId}/balasan/{balasDiskusiId}', [DiskusiController::class, 'destroyBalasan'])->name('teacher.courses.diskusi.balasan.destroy');
     });
 
     // Admin Dashboard
     Route::middleware('role:admin')->group(function () {
         Route::get('/dashboard/admin', function () {
-            return view('dashboard.admin');
+            // Ambil statistik dari database sehingga view tidak bergantung pada nilai hardcoded
+            $totalUsers = User::count();
+            $totalKursus = Kursus::count();
+            $pengajarCount = User::where('peran', 'pengajar')->count();
+            $pelajarCount = User::where('peran', 'pelajar')->count();
+
+            return view('dashboard.admin', compact('totalUsers', 'totalKursus', 'pengajarCount', 'pelajarCount'));
         })->name('admin.dashboard');
 
         // Users Management
@@ -123,37 +142,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/courses/{id}/update', [CourseController::class, 'update'])->name('admin.courses.update');
         Route::delete('/admin/courses/{id}', [CourseController::class, 'destroy'])->name('admin.courses.delete');
 
-        Route::get('/admin/payments', function () {
-            return view('pages.admin.payments');
-        })->name('admin.payments');
+        Route::get('/admin/payments', [CourseController::class, 'adminPayments'])->name('admin.payments');
 
         // Mentoring Management
-        Route::get('/admin/mentoring', function () {
-            return view('pages.admin.mentoring');
-        })->name('admin.mentoring');
-        Route::get('/admin/mentoring/create', function () {
-            return view('pages.admin.mentoring-form');
-        })->name('admin.mentoring.create');
-        Route::post('/admin/mentoring/store', function () {
-            return redirect()->route('admin.mentoring')->with('success', 'Jadwal mentoring berhasil ditambahkan');
-        })->name('admin.mentoring.store');
-        Route::get('/admin/mentoring/{id}/edit', function ($id) {
-            $mentoring = [
-                'id' => $id,
-                'pengajar' => 'Nama Pengajar',
-                'tanggal' => '2025-12-01',
-                'jam' => '09:00',
-                'status' => 'Belum',
-                'zoom_link' => 'https://zoom.us/j/1234567890'
-            ];
-            return view('pages.admin.mentoring-form', compact('mentoring'));
-        })->name('admin.mentoring.edit');
-        Route::post('/admin/mentoring/{id}/update', function ($id) {
-            return redirect()->route('admin.mentoring')->with('success', 'Jadwal mentoring berhasil diupdate');
-        })->name('admin.mentoring.update');
-        Route::get('/admin/mentoring/{id}/delete', function ($id) {
-            return redirect()->route('admin.mentoring')->with('success', 'Jadwal mentoring berhasil dihapus');
-        })->name('admin.mentoring.delete');
+        Route::get('/admin/mentoring', [MentoringController::class, 'index'])->name('admin.mentoring');
+        Route::get('/admin/mentoring/create', [MentoringController::class, 'create'])->name('admin.mentoring.create');
+        Route::post('/admin/mentoring/store', [MentoringController::class, 'store'])->name('admin.mentoring.store');
+        Route::get('/admin/mentoring/{id}/edit', [MentoringController::class, 'edit'])->name('admin.mentoring.edit');
+        Route::post('/admin/mentoring/{id}/update', [MentoringController::class, 'update'])->name('admin.mentoring.update');
+        Route::delete('/admin/mentoring/{id}', [MentoringController::class, 'destroy'])->name('admin.mentoring.destroy');
 
         Route::get('/admin/certificates', function () {
             return view('pages.admin.certificates');

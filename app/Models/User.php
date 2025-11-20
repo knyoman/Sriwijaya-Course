@@ -19,6 +19,12 @@ class User extends Authenticatable
         'kata_sandi',
         'peran',
         'alamat',
+        'nomor_telepon',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'keahlian',
+        'sertifikasi',
+        'biografi',
     ];
 
     protected $hidden = [
@@ -26,22 +32,18 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    // Hash password sebelum disimpan
-    protected static function boot()
+    /**
+     * Mutator untuk auto-hash password
+     */
+    public function setKataSandiAttribute($value)
     {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if ($model->kata_sandi) {
-                $model->kata_sandi = Hash::make($model->kata_sandi);
-            }
-        });
-
-        static::updating(function ($model) {
-            if ($model->isDirty('kata_sandi')) {
-                $model->kata_sandi = Hash::make($model->kata_sandi);
-            }
-        });
+        // Jika nilai sudah berupa hash Bcrypt (dimulai dengan $2), simpan apa adanya
+        if (str_starts_with($value, '$2')) {
+            $this->attributes['kata_sandi'] = $value;
+        } else {
+            // Jika plain text, hash dengan Bcrypt
+            $this->attributes['kata_sandi'] = Hash::make($value);
+        }
     }
 
     /**
@@ -65,8 +67,24 @@ class User extends Authenticatable
         )->withPivot('status', 'nilai_akhir')->withTimestamps();
     }
 
+    /**
+     * Relationship: Certificates yang dimiliki pelajar
+     */
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class, 'pelajar_id');
+    }
+
     public function getAuthPassword()
     {
         return $this->kata_sandi;
+    }
+
+    /**
+     * Check if password is plain text (tidak ter-hash)
+     */
+    public function isPlainTextPassword()
+    {
+        return !str_starts_with($this->kata_sandi, '$2');
     }
 }

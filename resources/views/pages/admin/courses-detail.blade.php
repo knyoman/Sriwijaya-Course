@@ -62,30 +62,6 @@
                             <div class="alert alert-info">
                                 <p class="mb-0">{{ $course->konten }}</p>
                             </div>
-                            @else
-                            <div class="alert alert-warning">
-                                <p class="mb-0">Materi pembelajaran belum ditambahkan. Silakan edit kursus untuk menambahkan materi.</p>
-                            </div>
-                            @endif
-
-                            <!-- Forum Diskusi Section -->
-                            <h5 class="mt-5 mb-3">Forum Diskusi</h5>
-                            <div class="mb-3">
-                                <a href="{{ route('teacher.courses.diskusi.index', $course->id) }}" class="btn btn-info btn-sm">
-                                    <i class="bi bi-chat-dots"></i> Lihat Forum Diskusi ({{ $diskusi_count ?? 0 }})
-                                </a>
-                            </div>
-
-                            <!-- Quiz Kursus Section -->
-                            <h5 class="mb-3">Quiz Kursus</h5>
-                            @if($course->quiz)
-                            <div class="alert alert-info">
-                                <p class="mb-0">{{ $course->quiz }}</p>
-                            </div>
-                            @else
-                            <div class="alert alert-warning">
-                                <p class="mb-0">Quiz belum ditambahkan. Silakan edit kursus untuk menambahkan quiz.</p>
-                            </div>
                             @endif
                         </div>
                     </div>

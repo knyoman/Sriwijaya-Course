@@ -17,7 +17,7 @@
                 @forelse($courses as $course)
                 <div class="col-md-4 mb-4">
                     <div class="card border-0 shadow-sm h-100">
-                        <img src="{{ $course->image ?? 'https://via.placeholder.com/400x250' }}" class="card-img-top" alt="{{ $course->nama }}" style="height: 200px; object-fit: cover;">
+                        <img src="{{ $course->image ?: 'https://via.placeholder.com/400x250?text=' . urlencode($course->nama) }}" class="card-img-top" alt="{{ $course->nama }}" style="height: 200px; object-fit: cover;">
                         <div class="card-body">
                             <h5 class="card-title fw-bold">{{ $course->nama }}</h5>
                             <p class="card-text text-muted">{{ Str::limit($course->deskripsi, 100) }}</p>

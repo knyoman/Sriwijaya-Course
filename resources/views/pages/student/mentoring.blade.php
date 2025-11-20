@@ -8,6 +8,14 @@
     @include('components.sidebar-student')
     <main style="flex: 1; margin-left: 170px; padding: 2rem;">
         <div class="container-fluid">
+            <!-- Alert Success -->
+            @if($message = session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fa-solid fa-check-circle me-2"></i>{{ $message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
+
             <div class="mb-4">
                 <h1 class="fw-bold">Jadwal Mentoring</h1>
                 <p class="text-muted">Daftar sesi mentoring yang tersedia dan telah Anda ikuti</p>
@@ -121,6 +129,19 @@
                                                     <form method="POST" action="{{ route('student.mentoring.feedback', $mentoring->id) }}">
                                                         @csrf
                                                         <div class="modal-body">
+                                                            <!-- Error Display -->
+                                                            @if($errors->any())
+                                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                                <strong>Ada kesalahan:</strong>
+                                                                <ul class="mb-0 mt-2">
+                                                                    @foreach($errors->all() as $error)
+                                                                    <li>{{ $error }}</li>
+                                                                    @endforeach
+                                                                </ul>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                            </div>
+                                                            @endif
+
                                                             <!-- Rating -->
                                                             <div class="mb-3">
                                                                 <label class="form-label">Rating <span class="text-danger">*</span></label>
@@ -153,7 +174,7 @@
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox" name="benefits[]" value="interaktif" id="benefit2{{ $mentoring->id }}">
                                                                     <label class="form-check-label" for="benefit2{{ $mentoring->id }}">
-                                                                        Sesi interaktif dan engaging
+                                                                        Sesi interaktif
                                                                     </label>
                                                                 </div>
                                                                 <div class="form-check">

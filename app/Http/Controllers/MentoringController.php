@@ -112,6 +112,11 @@ class MentoringController extends Controller
         $validated['mentoring_id'] = $mentoringId;
         $validated['pelajar_id'] = Auth::id();
 
+        // Handle benefits array - jika kosong, set ke null atau empty array
+        if (empty($validated['benefits'])) {
+            $validated['benefits'] = null;
+        }
+
         // Update atau create feedback
         MentoringFeedback::updateOrCreate(
             [

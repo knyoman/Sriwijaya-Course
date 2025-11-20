@@ -141,7 +141,7 @@
                                 @php
                                 $benefitLabels = [
                                 'materi_jelas' => 'Materi Jelas',
-                                'interaktif' => 'Interaktif',
+                                'interaktif' => 'Sesi Interaktif',
                                 'pertanyaan_terjawab' => 'Pertanyaan Terjawab'
                                 ];
                                 @endphp

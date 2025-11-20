@@ -57,6 +57,12 @@ class MentoringController extends Controller
     public function edit($id)
     {
         $mentoring = Mentoring::findOrFail($id);
+
+        // Authorization: Admin atau Pengajar yang membuat
+        if (Auth::user()->peran !== 'admin' && Auth::user()->id !== $mentoring->pengajar_id) {
+            abort(403, 'Unauthorized access');
+        }
+
         $pengajars = User::where('peran', 'pengajar')->get();
         $kursuses = Kursus::all();
         return view('pages.admin.mentoring-form', compact('mentoring', 'pengajars', 'kursuses'));
@@ -68,6 +74,11 @@ class MentoringController extends Controller
     public function update(Request $request, $id)
     {
         $mentoring = Mentoring::findOrFail($id);
+
+        // Authorization: Admin atau Pengajar yang membuat
+        if (Auth::user()->peran !== 'admin' && Auth::user()->id !== $mentoring->pengajar_id) {
+            abort(403, 'Unauthorized access');
+        }
 
         $validated = $request->validate([
             'pengajar_id' => 'required|exists:pengguna,id',
@@ -135,6 +146,12 @@ class MentoringController extends Controller
     public function showFeedback($mentoringId)
     {
         $mentoring = Mentoring::with('pengajar', 'kursus', 'feedbacks.pelajar')->findOrFail($mentoringId);
+
+        // Authorization: Admin atau Pengajar yang membuat
+        if (Auth::user()->peran !== 'admin' && Auth::user()->id !== $mentoring->pengajar_id) {
+            abort(403, 'Unauthorized access');
+        }
+
         $feedbacks = $mentoring->feedbacks;
 
         return view('pages.admin.mentoring-feedback', compact('mentoring', 'feedbacks'));

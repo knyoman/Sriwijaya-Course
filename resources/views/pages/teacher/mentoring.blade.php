@@ -80,6 +80,12 @@
                                         <i class="fa-solid fa-video"></i> Zoom
                                     </a>
                                     @endif
+                                    <a href="{{ route('admin.mentoring.feedback', $mentoring->id) }}" class="btn btn-success btn-sm" title="Lihat Feedback">
+                                        <i class="fa-solid fa-comments"></i> Feedback
+                                    </a>
+                                    <a href="{{ route('admin.mentoring.edit', $mentoring->id) }}" class="btn btn-warning btn-sm" title="Edit">
+                                        <i class="fa-solid fa-pencil"></i> Edit
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -116,8 +122,10 @@
                             </td>
                             <td>
                                 @if($mentoring->zoom_link)
-                                <a href="{{ $mentoring->zoom_link }}" target="_blank" class="btn btn-info btn-sm">Link Zoom</a>
+                                <a href="{{ $mentoring->zoom_link }}" target="_blank" class="btn btn-info btn-sm mb-1">Zoom</a>
                                 @endif
+                                <a href="{{ route('admin.mentoring.feedback', $mentoring->id) }}" class="btn btn-success btn-sm mb-1">Feedback</a>
+                                <a href="{{ route('admin.mentoring.edit', $mentoring->id) }}" class="btn btn-warning btn-sm">Edit</a>
                             </td>
                         </tr>
                         @empty

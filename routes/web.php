@@ -16,6 +16,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\MentoringController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardPelajarController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Models\User;
 use App\Models\Kursus;
 
@@ -46,7 +47,8 @@ Route::middleware('auth')->group(function () {
         // Student Pages
         Route::get('/student/courses', [CourseController::class, 'studentCourses'])->name('student.courses');
         Route::get('/student/my-courses', [CourseController::class, 'studentMyCourses'])->name('student.my-courses');
-        Route::post('/student/courses/{id}/enroll', [CourseController::class, 'studentEnroll'])->name('student.course.enroll');
+        Route::get('/student/courses/{id}/enroll', [CourseController::class, 'studentEnroll'])->name('student.course.enroll');
+        Route::post('/student/courses/{id}/enroll', [CourseController::class, 'studentEnrollProcess'])->name('student.course.enroll.process');
         Route::get('/student/certificates', [CertificateController::class, 'index'])->name('student.certificates');
         Route::get('/student/mentoring', [CourseController::class, 'studentMentoring'])->name('student.mentoring');
         Route::post('/student/mentoring/{mentoringId}/feedback', [MentoringController::class, 'storeFeedback'])->name('student.mentoring.feedback');
@@ -55,10 +57,13 @@ Route::middleware('auth')->group(function () {
         Route::put('/student/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/student/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
         Route::get('/student/course/{id}/learn', [CourseController::class, 'studentCourseLearn'])->name('student.course-learn');
+        Route::post('/student/materi/submit', [\App\Http\Controllers\MateriSubmissionController::class, 'store'])->name('student.materi.submit');
         Route::get('/student/courses/{courseId}/diskusi', [DiskusiController::class, 'indexStudent'])->name('student.courses.diskusi.index');
         Route::post('/student/courses/{courseId}/diskusi', [DiskusiController::class, 'storeStudent'])->name('student.courses.diskusi.store');
         Route::get('/student/courses/{courseId}/diskusi/{diskusiId}', [DiskusiController::class, 'showStudent'])->name('student.courses.diskusi.show');
         Route::post('/student/courses/{courseId}/diskusi/{diskusiId}/balasan', [DiskusiController::class, 'storeBalasanStudent'])->name('student.courses.diskusi.balasan.store');
+
+        // Teacher routes (already inside role:pengajar group below), but add submissions viewing/grading under teacher
         Route::delete('/student/courses/{courseId}/diskusi/{diskusiId}/balasan/{balasDiskusiId}', [DiskusiController::class, 'destroyBalasanStudent'])->name('student.courses.diskusi.balasan.destroy');
         Route::get('/student/courses/{courseId}/quiz/{quizId}', [QuizController::class, 'show'])->name('student.quiz.show');
         Route::post('/student/courses/{courseId}/quiz/{quizId}/submit', [QuizController::class, 'submit'])->name('student.quiz.submit');
@@ -79,17 +84,27 @@ Route::middleware('auth')->group(function () {
 
     // Pengajar Dashboard
     Route::middleware('role:pengajar')->group(function () {
+        Route::get('/teacher/courses/{courseId}/submissions', [\App\Http\Controllers\MateriSubmissionController::class, 'indexForCourse'])->name('teacher.course.submissions');
+        Route::post('/teacher/submission/{submissionId}/grade', [\App\Http\Controllers\MateriSubmissionController::class, 'grade'])->name('teacher.submission.grade');
+    });
+
+    // Pengajar Dashboard
+    Route::middleware('role:pengajar')->group(function () {
         Route::get('/dashboard/pengajar', [TeacherController::class, 'dashboard'])->name('pengajar.dashboard');
         Route::get('/teacher/dashboard', [TeacherController::class, 'dashboard'])->name('teacher.dashboard');
         Route::get('/teacher/courses', [CourseController::class, 'teacherCourses'])->name('teacher.courses');
         Route::get('/teacher/courses/{id}/materials', [TeacherController::class, 'courseMaterials'])->name('teacher.course-materials');
         Route::get('/teacher/mentoring', [CourseController::class, 'teacherMentoring'])->name('teacher.mentoring');
+        Route::get('/teacher/mentoring/{id}/edit', [MentoringController::class, 'edit'])->name('teacher.mentoring.edit');
+        Route::patch('/teacher/mentoring/{id}', [MentoringController::class, 'update'])->name('teacher.mentoring.update');
+        Route::get('/teacher/mentoring/{mentoringId}/feedback', [MentoringController::class, 'showFeedback'])->name('teacher.mentoring.feedback');
         Route::get('/teacher/profile', [TeacherController::class, 'profile'])->name('teacher.profile');
         Route::put('/teacher/profile', [TeacherController::class, 'updateProfile'])->name('teacher.profile.update');
         Route::put('/teacher/profile/password', [TeacherController::class, 'updatePassword'])->name('teacher.profile.update-password');
         Route::get('/teacher/certificates', [TeacherController::class, 'courses'])->name('teacher.certificates');
 
         // Materi Routes
+        Route::get('/teacher/materi/{materiId}', [MateriController::class, 'show'])->name('teacher.materi.show');
         Route::post('/teacher/courses/{courseId}/materi/store', [MateriController::class, 'store'])->name('materi.store');
         Route::put('/teacher/materi/{materiId}', [MateriController::class, 'update'])->name('materi.update');
         Route::delete('/teacher/materi/{materiId}', [MateriController::class, 'destroy'])->name('materi.destroy');
@@ -116,15 +131,8 @@ Route::middleware('auth')->group(function () {
 
     // Admin Dashboard
     Route::middleware('role:admin')->group(function () {
-        Route::get('/dashboard/admin', function () {
-            // Ambil statistik dari database sehingga view tidak bergantung pada nilai hardcoded
-            $totalUsers = User::count();
-            $totalKursus = Kursus::count();
-            $pengajarCount = User::where('peran', 'pengajar')->count();
-            $pelajarCount = User::where('peran', 'pelajar')->count();
-
-            return view('dashboard.admin', compact('totalUsers', 'totalKursus', 'pengajarCount', 'pelajarCount'));
-        })->name('admin.dashboard');
+        Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/activity-logs', [AdminDashboardController::class, 'activityLogs'])->name('admin.activity-logs');
 
         // Users Management
         Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
@@ -144,13 +152,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/courses/{id}', [CourseController::class, 'destroy'])->name('admin.courses.delete');
 
         Route::get('/admin/payments', [CourseController::class, 'adminPayments'])->name('admin.payments');
+        Route::post('/admin/payments/{courseId}/{studentId}/update', [CourseController::class, 'updatePayment'])->name('admin.payments.update');
 
         // Mentoring Management
         Route::get('/admin/mentoring', [MentoringController::class, 'index'])->name('admin.mentoring');
         Route::get('/admin/mentoring/create', [MentoringController::class, 'create'])->name('admin.mentoring.create');
         Route::post('/admin/mentoring/store', [MentoringController::class, 'store'])->name('admin.mentoring.store');
         Route::get('/admin/mentoring/{id}/edit', [MentoringController::class, 'edit'])->name('admin.mentoring.edit');
-        Route::post('/admin/mentoring/{id}/update', [MentoringController::class, 'update'])->name('admin.mentoring.update');
+        Route::patch('/admin/mentoring/{id}', [MentoringController::class, 'update'])->name('admin.mentoring.update');
         Route::delete('/admin/mentoring/{id}', [MentoringController::class, 'destroy'])->name('admin.mentoring.destroy');
         Route::get('/admin/mentoring/{mentoringId}/feedback', [MentoringController::class, 'showFeedback'])->name('admin.mentoring.feedback');
 

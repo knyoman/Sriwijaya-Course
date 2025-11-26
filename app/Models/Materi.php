@@ -19,6 +19,14 @@ class Materi extends Model
         'tipe_konten',
         'url_konten',
         'durasi_menit',
+        // assignment-related
+        'has_tugas',
+        'tugas_instruksi',
+        'tugas_soal',
+    ];
+
+    protected $casts = [
+        'has_tugas' => 'boolean',
     ];
 
     /**
@@ -27,5 +35,13 @@ class Materi extends Model
     public function kursus()
     {
         return $this->belongsTo(Kursus::class, 'kursus_id');
+    }
+
+    /**
+     * Submissions (tugas) untuk materi ini
+     */
+    public function submissions()
+    {
+        return $this->hasMany(\App\Models\MateriSubmission::class, 'materi_id');
     }
 }

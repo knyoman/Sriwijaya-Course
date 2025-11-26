@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+
 use App\Models\Kursus;
 use App\Models\User;
 use App\Models\Mentoring;
@@ -15,7 +17,9 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Kursus::with('pengajar')->get();
+        $courses = Kursus::with('pengajar')
+            ->withCount('pelajar')
+            ->get();
         return view('pages.admin.courses', compact('courses'));
     }
 
@@ -107,7 +111,10 @@ class CourseController extends Controller
      */
     public function publicList()
     {
-        $courses = Kursus::published()->with('pengajar')->get();
+        $courses = Kursus::published()
+            ->with('pengajar')
+            ->withCount('pelajar')
+            ->get();
         return view('pages.courses', compact('courses'));
     }
 
@@ -125,8 +132,11 @@ class CourseController extends Controller
      */
     public function studentCourses()
     {
-        $courses = Kursus::published()->with('pengajar')->get();
-        $enrolledCourses = auth()->user()->enrolledCourses();
+        $courses = Kursus::published()
+            ->with('pengajar')
+            ->withCount('pelajar')
+            ->get();
+        $enrolledCourses = Auth::user()->enrolledCourses();
         return view('pages.student.courses', compact('courses', 'enrolledCourses'));
     }
 
@@ -135,7 +145,7 @@ class CourseController extends Controller
      */
     public function studentMyCourses()
     {
-        $myCourses = auth()->user()->enrolledCourses()->with('pengajar')->get();
+        $myCourses = Auth::user()->enrolledCourses()->with('pengajar')->get();
         return view('pages.student.my-courses', compact('myCourses'));
     }
 
@@ -144,15 +154,16 @@ class CourseController extends Controller
      */
     public function studentPayments()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         $payments = $user->enrolledCourses()->with('pengajar')->get()->map(function ($course) {
             return (object) [
                 'kursus_id' => $course->id,
                 'kursus_nama' => $course->nama,
                 'harga' => $course->harga,
-                // Override status to always Lunas for student view as requested
-                'status' => 'Lunas',
+                'metode_pembayaran' => $course->pivot->metode_pembayaran ?? '-',
+                'status' => $course->pivot->status_pembayaran === 'lunas' ? 'Lunas' : ucfirst($course->pivot->status_pembayaran ?? 'Pending'),
+                'tanggal_daftar' => $course->pivot->created_at ? $course->pivot->created_at->format('d-m-Y H:i') : '-',
             ];
         });
 
@@ -162,25 +173,41 @@ class CourseController extends Controller
     /**
      * Student: Daftar ke kursus
      */
+    // Tampilkan form pilih metode pembayaran
     public function studentEnroll($courseId)
     {
         $course = Kursus::findOrFail($courseId);
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Check jika sudah terdaftar
         if ($user->enrolledCourses()->where('kursus_id', $courseId)->exists()) {
             return redirect()->back()->with('warning', 'Anda sudah terdaftar di kursus ini');
         }
 
-        // Daftar ke kursus
+        return view('pages.student.payment-method', compact('course'));
+    }
+
+    // Proses simpan pendaftaran & pembayaran
+    public function studentEnrollProcess(Request $request, $courseId)
+    {
+        $request->validate([
+            'metode_pembayaran' => 'required|string',
+        ]);
+        $course = Kursus::findOrFail($courseId);
+        $user = Auth::user();
+
+        if ($user->enrolledCourses()->where('kursus_id', $courseId)->exists()) {
+            return redirect()->route('student.courses')->with('warning', 'Anda sudah terdaftar di kursus ini');
+        }
+
         $user->enrolledCourses()->attach($courseId, [
             'status' => 'terdaftar',
+            'metode_pembayaran' => $request->metode_pembayaran,
+            'status_pembayaran' => 'lunas',
         ]);
-
-        // Update jumlah pelajar
         $course->increment('jumlah_pelajar');
 
-        return redirect()->back()->with('success', 'Berhasil terdaftar di kursus');
+        return redirect()->route('student.payments')->with('success', 'Pendaftaran berhasil, silakan lakukan pembayaran.');
     }
 
     /**
@@ -188,10 +215,16 @@ class CourseController extends Controller
      */
     public function studentCourseLearn($courseId)
     {
-        $course = Kursus::with('pengajar', 'diskusi', 'materi')->findOrFail($courseId);
+        $course = Kursus::with('pengajar', 'diskusi', 'materi', 'quiz')->findOrFail($courseId);
+
+        // Pastikan user adalah instance App\Models\User
+        $user = Auth::user();
+        if (!($user instanceof \App\Models\User)) {
+            $user = User::find($user->id);
+        }
 
         // Verify user enrolled
-        if (!auth()->user()->enrolledCourses()->where('kursus_id', $courseId)->exists()) {
+        if (!$user->enrolledCourses()->where('kursus_id', $courseId)->exists()) {
             abort(403, 'Anda belum terdaftar di kursus ini');
         }
 
@@ -199,7 +232,22 @@ class CourseController extends Controller
         $materiList = $course->materi()->orderBy('urutan')->get();
         $materiFirst = $materiList->first();
 
-        return view('pages.student.course-learn', compact('course', 'diskusi', 'materiList', 'materiFirst'));
+        // Ambil quiz yang sudah lulus dari certificate
+        $lulusQuizIds = $user->certificates()->where('kursus_id', $courseId)->pluck('quiz_id')->toArray();
+
+        // Ambil materi yang sudah lulus
+        $materiIds = $course->materi()->pluck('id')->toArray();
+        $lulusMateriIds = $user->materiSubmissions()
+            ->where('status', 'lulus')
+            ->whereIn('materi_id', $materiIds)
+            ->pluck('materi_id')
+            ->unique()
+            ->toArray();
+
+        // Logic: Quiz hanya unlock jika semua materi sudah lulus
+        $allLulus = count($materiIds) > 0 && count($lulusMateriIds) === count($materiIds);
+
+        return view('pages.student.course-learn', compact('course', 'diskusi', 'materiList', 'materiFirst', 'lulusQuizIds', 'lulusMateriIds', 'allLulus'));
     }
 
     /**
@@ -207,7 +255,10 @@ class CourseController extends Controller
      */
     public function teacherCourses()
     {
-        $courses = Kursus::byPengajar(auth()->id())->with('pelajar')->get();
+        $courses = Kursus::byPengajar(Auth::id())
+            ->with('pelajar')
+            ->withCount('pelajar')
+            ->get();
         return view('pages.teacher.courses', compact('courses'));
     }
 
@@ -223,12 +274,15 @@ class CourseController extends Controller
             return $course->pelajar->map(function ($student) use ($course) {
                 return (object) [
                     'id' => $course->id,
+                    'student_id' => $student->id,
                     'pelajar_username' => $student->username,
                     'pelajar_nama' => $student->nama,
                     'kursus_nama' => $course->nama,
                     'harga' => $course->harga,
+                    'metode_pembayaran' => $student->pivot->metode_pembayaran ?? '-',
+                    'tanggal_daftar' => $student->pivot->created_at ? $student->pivot->created_at->format('d-m-Y H:i') : '-',
+                    'status' => $student->pivot->status_pembayaran === 'lunas' ? 'Lunas' : ucfirst($student->pivot->status_pembayaran ?? 'Pending'),
                     'created_at' => $student->pivot->created_at,
-                    'status' => 'Lunas' // Default status, bisa disesuaikan dari pivot jika ada
                 ];
             });
         })->sortByDesc('created_at');
@@ -245,8 +299,26 @@ class CourseController extends Controller
      */
     public function studentMentoring()
     {
-        $mentorings = Mentoring::with('pengajar', 'kursus.pelajar')->orderBy('tanggal', 'asc')->get();
-        return view('pages.student.mentoring', compact('mentorings'));
+        $user = Auth::user();
+
+        // Ambil daftar kursus yang diikuti pelajar
+        // gunakan penamaan tabel agar kolom 'id' tidak ambigu saat join
+        $enrolledCourseIds = $user->enrolledCourses()->pluck('kursus.id')->toArray();
+
+        // Jika tidak ada kursus yang diikuti, kembalikan koleksi kosong
+        if (empty($enrolledCourseIds)) {
+            $mentorings = collect();
+        } else {
+            // Ambil mentoring yang berkaitan dengan kursus yang diikuti pelajar
+            // Urutkan sehingga: Sedang Berlangsung -> Belum -> Sudah, lalu berdasarkan tanggal
+            $mentorings = Mentoring::with('pengajar', 'kursus.pelajar', 'feedbacks')
+                ->whereIn('kursus_id', $enrolledCourseIds)
+                ->orderByRaw("FIELD(status, 'Sedang Berlangsung','Belum','Sudah') ASC")
+                ->orderBy('tanggal', 'asc')
+                ->get();
+        }
+
+        return view('pages.student.mentoring', compact('mentorings', 'user'));
     }
 
     /**
@@ -254,11 +326,51 @@ class CourseController extends Controller
      */
     public function teacherMentoring()
     {
-        $mentorings = Mentoring::where('pengajar_id', auth()->id())
-            ->with('pengajar', 'kursus.pelajar')
+        $user = Auth::user();
+
+        $mentorings = Mentoring::where('pengajar_id', Auth::id())
+            ->with('pengajar', 'kursus.pelajar', 'feedbacks.pelajar')
+            ->orderByRaw("FIELD(status, 'Sedang Berlangsung','Belum','Sudah') ASC")
             ->orderBy('tanggal', 'asc')
             ->get();
 
-        return view('pages.teacher.mentoring', compact('mentorings'));
+        return view('pages.teacher.mentoring', compact('mentorings', 'user'));
+    }
+
+    /**
+     * Admin: Update payment information
+     */
+    public function updatePayment(Request $request, $courseId, $studentId)
+    {
+        $request->validate([
+            'metode_pembayaran' => 'nullable|string',
+            'status_pembayaran' => 'nullable|in:pending,lunas',
+            'tanggal_daftar' => 'nullable|date_format:Y-m-d',
+        ]);
+
+        $user = User::findOrFail($studentId);
+        $course = Kursus::findOrFail($courseId);
+
+        // Update pivot data
+        $pivotData = [];
+
+        if ($request->filled('metode_pembayaran')) {
+            $pivotData['metode_pembayaran'] = $request->metode_pembayaran;
+        }
+
+        if ($request->filled('status_pembayaran')) {
+            $pivotData['status_pembayaran'] = $request->status_pembayaran;
+        }
+
+        if ($request->filled('tanggal_daftar')) {
+            // Convert date to timestamp format for created_at
+            $pivotData['created_at'] = $request->tanggal_daftar . ' ' . now()->format('H:i:s');
+        }
+
+        if (!empty($pivotData)) {
+            $user->enrolledCourses()->updateExistingPivot($courseId, $pivotData);
+        }
+
+        return redirect()->back()->with('success', 'Data pembayaran berhasil diperbarui.');
     }
 }

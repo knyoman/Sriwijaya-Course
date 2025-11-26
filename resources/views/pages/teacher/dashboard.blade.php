@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex">
     @include('components.sidebar-teacher')
-    <main class="flex-fill p-4">
+    <main style="margin-left: 250px; padding-top: 70px;" class="flex-fill p-4">
         <div class="mb-4">
             <h5 class="text-muted mb-1">Dashboard Pengajar</h5>
             <p class="mb-0 text-muted small">Selamat datang, {{ auth()->user()->nama }}</p>

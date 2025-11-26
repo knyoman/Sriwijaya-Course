@@ -17,7 +17,8 @@ class MentoringController extends Controller
     public function index()
     {
         $mentorings = Mentoring::with('pengajar', 'kursus.pelajar')->orderBy('tanggal', 'asc')->get();
-        return view('pages.admin.mentoring', compact('mentorings'));
+        $kursuses = Kursus::all();
+        return view('pages.admin.mentoring', compact('mentorings', 'kursuses'));
     }
 
     /**
@@ -39,12 +40,17 @@ class MentoringController extends Controller
             'pengajar_id' => 'required|exists:pengguna,id',
             'kursus_id' => 'required|exists:kursus,id',
             'tanggal' => 'required|date|after:today',
-            'jam' => 'required|date_format:H:i',
+            'jam' => 'required|date_format:H:i|regex:/^\d{2}:\d{2}$/',
             'durasi' => 'required|integer|min:15|max:480',
-            'topik' => 'required|string|max:255',
             'status' => 'required|in:Belum,Sedang Berlangsung,Sudah',
             'zoom_link' => 'nullable|url',
         ]);
+
+        // Convert jam format dari H:i ke H:i:s untuk storage
+        $validated['jam'] = $validated['jam'] . ':00';
+
+        // Jika field 'topik' masih ada di database, isi dengan string kosong
+        $validated['topik'] = '';
 
         Mentoring::create($validated);
 
@@ -63,6 +69,12 @@ class MentoringController extends Controller
             abort(403, 'Unauthorized access');
         }
 
+        // Jika pengajar, tampilkan view pengajar
+        if (Auth::user()->peran === 'pengajar') {
+            return view('pages.teacher.mentoring-form', compact('mentoring'));
+        }
+
+        // Jika admin, tampilkan view admin dengan data lengkap
         $pengajars = User::where('peran', 'pengajar')->get();
         $kursuses = Kursus::all();
         return view('pages.admin.mentoring-form', compact('mentoring', 'pengajars', 'kursuses'));
@@ -80,20 +92,33 @@ class MentoringController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        $validated = $request->validate([
-            'pengajar_id' => 'required|exists:pengguna,id',
-            'kursus_id' => 'required|exists:kursus,id',
-            'tanggal' => 'required|date',
-            'jam' => 'required|date_format:H:i',
-            'durasi' => 'required|integer|min:15|max:480',
-            'topik' => 'required|string|max:255',
-            'status' => 'required|in:Belum,Sedang Berlangsung,Sudah',
-            'zoom_link' => 'nullable|url',
-        ]);
+        // Pengajar hanya bisa edit status dan zoom_link
+        if (Auth::user()->peran === 'pengajar') {
+            $validated = $request->validate([
+                'status' => ['required', 'in:Belum,Sedang Berlangsung,Sudah'],
+                'zoom_link' => 'nullable|url',
+            ]);
+        } else {
+            // Admin bisa edit semua
+            $validated = $request->validate([
+                'pengajar_id' => 'required|exists:pengguna,id',
+                'kursus_id' => 'required|exists:kursus,id',
+                'tanggal' => 'required|date',
+                'jam' => 'required|date_format:H:i|regex:/^\d{2}:\d{2}$/',
+                'durasi' => 'required|integer|min:15|max:480',
+                'topik' => 'nullable|string|max:255',
+                'status' => ['required', 'in:Belum,Sedang Berlangsung,Sudah'],
+                'zoom_link' => 'nullable|url',
+            ]);
+
+            // Convert jam format dari H:i ke H:i:s untuk storage
+            $validated['jam'] = $validated['jam'] . ':00';
+        }
 
         $mentoring->update($validated);
 
-        return redirect()->route('admin.mentoring')->with('success', 'Jadwal mentoring berhasil diupdate');
+        $redirectRoute = Auth::user()->peran === 'pengajar' ? 'teacher.mentoring' : 'admin.mentoring';
+        return redirect()->route($redirectRoute)->with('success', 'Jadwal mentoring berhasil diupdate');
     }
 
     /**
@@ -113,6 +138,11 @@ class MentoringController extends Controller
     public function storeFeedback(Request $request, $mentoringId)
     {
         $mentoring = Mentoring::findOrFail($mentoringId);
+
+        // Hanya izinkan feedback ketika mentoring sedang berlangsung
+        if ($mentoring->status !== 'Sedang Berlangsung') {
+            return redirect()->back()->with('error', 'Feedback hanya dapat diberikan saat sesi sedang berlangsung.');
+        }
 
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
@@ -154,6 +184,12 @@ class MentoringController extends Controller
 
         $feedbacks = $mentoring->feedbacks;
 
+        // Jika pengajar, tampilkan view pengajar
+        if (Auth::user()->peran === 'pengajar') {
+            return view('pages.teacher.mentoring-feedback', compact('mentoring', 'feedbacks'));
+        }
+
+        // Jika admin, tampilkan view admin
         return view('pages.admin.mentoring-feedback', compact('mentoring', 'feedbacks'));
     }
 }

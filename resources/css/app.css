@@ -21,6 +21,28 @@
     box-sizing: border-box;
 }
 
+.btn-danger {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(220,53,69,0.15);
+    border: none;
+}
+
+.btn-danger:hover, .btn-danger:focus {
+    background-color: #b02a37 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(220,53,69,0.25);
+}
+
+.btn-danger .fa-trash {
+    margin-right: 4px;
+}
+
+.btn-danger span {
+    font-weight: bold;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -74,3 +96,45 @@ footer {
 .features {
     background-color: #f8f9fa;
 }
+
+/* Styling for ongoing mentoring sessions */
+.mentoring-ongoing {
+    border-left: 8px solid #0dcaf0;
+    box-shadow: 0 4px 12px rgba(13,202,240,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.mentoring-ongoing .card-header {
+    background: transparent;
+}
+
+.mentoring-ongoing .badge {
+    background-color: #0dcaf0 !important;
+    color: #fff !important;
+    border-radius: 999px;
+    padding: .35rem .6rem;
+    font-weight: 600;
+}
+
+.mentoring-ongoing .card-body {
+    padding-top: .8rem;
+}
+
+
+/* Small helpers for detail modals (used in teacher courses materials) */
+.detail-label {
+    font-weight: 700;
+    margin-bottom: .25rem;
+}
+
+.detail-value {
+    margin-bottom: .9rem;
+    color: #444;
+}
+
+@media (max-width: 576px) {
+    .detail-label { font-size: 0.95rem; }
+}
+

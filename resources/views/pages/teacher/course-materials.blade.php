@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex">
     @include('components.sidebar-teacher')
-    <main class="flex-fill p-4">
+    <main style="margin-left: 250px; padding-top: 70px;" class="flex-fill p-4">
         <!-- Header -->
         <div class="mb-4">
             <div class="d-flex align-items-center mb-3">
@@ -22,6 +22,9 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahMateri">
                 <i class="fa-solid fa-plus me-2"></i>Tambah Materi
             </button>
+            <a href="{{ route('teacher.course.submissions', $course->id) }}" class="btn btn-secondary ms-2">
+                <i class="fa-solid fa-inbox me-2"></i>Lihat Submissions
+            </a>
         </div>
 
         <!-- Materials List -->
@@ -233,44 +236,119 @@
 <div class="modal fade" id="modalDetailMateri{{ $mat->id }}" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{ $mat->judul_materi }}</h5>
+            <div class="modal-header bg-light border-bottom">
+                <div>
+                    <h5 class="modal-title mb-1">{{ $mat->judul_materi }}</h5>
+                    <small class="text-muted">Urutan Materi #{{ $mat->urutan }}</small>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Tipe Konten:</label>
-                    <p><span class="badge bg-info">{{ ucfirst($mat->tipe_konten) }}</span></p>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Deskripsi</label>
-                    <p>{{ $mat->deskripsi ?? 'Tidak ada deskripsi' }}</p>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Urutan</label>
-                        <p>{{ $mat->urutan }}</p>
+                <!-- Tipe Konten -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fa-solid fa-tag text-primary"></i>
+                        <label class="form-label fw-bold mb-0">Tipe Konten</label>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Durasi</label>
-                        <p>{{ $mat->durasi_menit ?? '-' }} menit</p>
-                    </div>
+                    <p class="ms-4">
+                        @if($mat->tipe_konten === 'video')
+                        <span class="badge bg-danger"><i class="fa-solid fa-video me-1"></i>Video</span>
+                        @else
+                        <span class="badge bg-warning text-dark"><i class="fa-solid fa-file me-1"></i>Dokumen</span>
+                        @endif
+                    </p>
                 </div>
-                @if($mat->url_konten)
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Link Konten</label>
-                    <p><a href="{{ $mat->url_konten }}" target="_blank" class="btn btn-sm btn-primary">Buka Link</a></p>
+
+                <!-- Deskripsi -->
+                @if($mat->deskripsi)
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fa-solid fa-align-left text-primary"></i>
+                        <label class="form-label fw-bold mb-0">Deskripsi</label>
+                    </div>
+                    <div class="ms-4 p-3 bg-light rounded">
+                        <p class="mb-0">{{ $mat->deskripsi }}</p>
+                    </div>
                 </div>
                 @endif
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Dibuat pada</label>
-                    <p>{{ $mat->created_at->format('d/m/Y H:i') }}</p>
+
+                <!-- Info Durasi dan Urutan -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="fa-solid fa-clock text-primary"></i>
+                            <label class="form-label fw-bold mb-0">Durasi</label>
+                        </div>
+                        <p class="ms-4 mb-0">
+                            @if($mat->durasi_menit)
+                            <strong>{{ $mat->durasi_menit }} menit</strong>
+                            @else
+                            <span class="text-muted">-</span>
+                            @endif
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="fa-solid fa-list-ol text-primary"></i>
+                            <label class="form-label fw-bold mb-0">Urutan</label>
+                        </div>
+                        <p class="ms-4 mb-0"><strong>{{ $mat->urutan }}</strong></p>
+                    </div>
+                </div>
+
+                <!-- Link Konten -->
+                @if($mat->url_konten)
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fa-solid fa-link text-primary"></i>
+                        <label class="form-label fw-bold mb-0">Link Konten</label>
+                    </div>
+                    <p class="ms-4">
+                        <a href="{{ $mat->url_konten }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>Buka Link
+                        </a>
+                    </p>
+                </div>
+                @endif
+
+                <!-- Instruksi Tugas -->
+                @if($mat->tugas_instruksi)
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fa-solid fa-clipboard text-primary"></i>
+                        <label class="form-label fw-bold mb-0">Instruksi Tugas</label>
+                    </div>
+                    <div class="ms-4 p-3 bg-light rounded">
+                        <p class="mb-0">{{ $mat->tugas_instruksi }}</p>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Soal/Petunjuk Tugas -->
+                @if($mat->tugas_soal)
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fa-solid fa-lightbulb text-primary"></i>
+                        <label class="form-label fw-bold mb-0">Soal/Petunjuk</label>
+                    </div>
+                    <div class="ms-4 p-3 bg-light rounded">
+                        <p class="mb-0">{{ $mat->tugas_soal }}</p>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Tanggal Dibuat -->
+                <div class="pt-3 border-top">
+                    <small class="text-muted">
+                        <i class="fa-solid fa-calendar-days me-1"></i>
+                        Dibuat pada: <strong>{{ $mat->created_at->format('d/m/Y H:i') }}</strong>
+                    </small>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditMateri{{ $mat->id }}" data-bs-dismiss="modal">
-                    <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                    <i class="fa-solid fa-pen-to-square me-1"></i>Edit Materi
                 </button>
             </div>
         </div>
@@ -318,6 +396,18 @@
                         <label class="form-label">Durasi (menit, opsional)</label>
                         <input type="number" class="form-control" name="durasi_menit" value="{{ $mat->durasi_menit }}">
                     </div>
+                    <hr>
+                    <h6 class="fw-bold">Tugas / Praktik (opsional)</h6>
+                    {{-- Tugas aktifkan checkbox removed per request --}}
+                    <div class="mb-3">
+                        <label class="form-label">Instruksi Tugas</label>
+                        <textarea class="form-control" name="tugas_instruksi" rows="3" placeholder="Tulis instruksi tugas yang harus dikerjakan oleh pelajar">{{ $mat->tugas_instruksi }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Soal / Petunjuk</label>
+                        <textarea class="form-control" name="tugas_soal" rows="3" placeholder="Contoh: Buat sebuah website sederhana menggunakan HTML/CSS...">{{ $mat->tugas_soal }}</textarea>
+                    </div>
+                    {{-- Batas Waktu removed --}}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -370,6 +460,18 @@
                         <label class="form-label">Durasi (menit, opsional)</label>
                         <input type="number" class="form-control" name="durasi_menit" placeholder="30">
                     </div>
+                    <hr>
+                    <h6 class="fw-bold">Tugas / Praktik (opsional)</h6>
+                    {{-- Tugas aktifkan checkbox removed per request --}}
+                    <div class="mb-3">
+                        <label class="form-label">Instruksi Tugas</label>
+                        <textarea class="form-control" name="tugas_instruksi" rows="3" placeholder="Tulis instruksi tugas yang harus dikerjakan oleh pelajar"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Soal / Petunjuk</label>
+                        <textarea class="form-control" name="tugas_soal" rows="3" placeholder="Contoh: Buat sebuah website sederhana menggunakan HTML/CSS..."></textarea>
+                    </div>
+                    {{-- Batas Waktu removed --}}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>

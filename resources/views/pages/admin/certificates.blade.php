@@ -4,7 +4,7 @@
 @include('components.navbar-admin')
 <div class="d-flex">
     @include('components.sidebar-admin')
-    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+    <main style="flex: 1; margin-left: 250px; padding-top: 70px; padding: 2rem;">
         <div class="container-fluid">
             <h5 class="mb-3">Sertifikat</h5>
             <div class="row">

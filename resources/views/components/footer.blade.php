@@ -1,4 +1,4 @@
-<footer class="bg-white py-5 border-top">
+<footer class="bg-white py-5 border-top" style="margin-left: 250px;">
     <div class="container">
         <div class="row">
             <!-- Kiri: Logo & Deskripsi -->

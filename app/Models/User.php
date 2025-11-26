@@ -64,7 +64,7 @@ class User extends Authenticatable
             'kursus_pelajar',
             'pelajar_id',
             'kursus_id'
-        )->withPivot('status', 'nilai_akhir')->withTimestamps();
+        )->withPivot('status', 'nilai_akhir', 'metode_pembayaran', 'status_pembayaran')->withTimestamps();
     }
 
     /**
@@ -73,6 +73,14 @@ class User extends Authenticatable
     public function certificates()
     {
         return $this->hasMany(Certificate::class, 'pelajar_id');
+    }
+
+    /**
+     * Submissions yang dibuat oleh pelajar
+     */
+    public function materiSubmissions()
+    {
+        return $this->hasMany(MateriSubmission::class, 'pelajar_id');
     }
 
     public function getAuthPassword()

@@ -6,7 +6,7 @@
 @include('components.navbar-student')
 <div class="d-flex">
     @include('components.sidebar-student')
-    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+    <main style="flex: 1; margin-left: 250px; padding-top: 70px; padding: 2rem; padding-top: 70px;">
         <div class="container-fluid">
             <a href="{{ route('student.course-learn', 1) }}" class="btn btn-outline-secondary btn-sm mb-3">
                 <i class="fa-solid fa-arrow-left me-2"></i> Kembali

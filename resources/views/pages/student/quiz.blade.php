@@ -6,7 +6,7 @@
 @include('components.navbar-student')
 <div class="d-flex">
     @include('components.sidebar-student')
-    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+    <main style="flex: 1; margin-left: 250px; padding-top: 70px; padding: 2rem; padding-top: 70px;">
         <div class="container-fluid">
             <a href="{{ route('student.course-learn', $course->id) }}" class="btn btn-outline-secondary btn-sm mb-3">
                 <i class="fa-solid fa-arrow-left me-2"></i> Kembali
@@ -26,17 +26,18 @@
                                 <i class="fa-solid fa-circle-info me-2"></i>
                                 <strong>Informasi Quiz:</strong>
                                 <ul class="mb-0 mt-2">
-                                    <li>Jumlah Soal: {{ $quiz->soal->count() }}</li>
+                                    <li>Jumlah Soal yang Ditampilkan: {{ isset($soalRandom) ? $soalRandom->count() : $quiz->soal->count() }}</li>
+                                    <li>Total Soal Tersedia: {{ $quiz->soal->count() }}</li>
                                     <li>Waktu: {{ $quiz->durasi_menit }} menit</li>
                                     <li>Nilai Kelulusan: 70</li>
                                 </ul>
                             </div>
 
-                            @if($quiz->soal->count() > 0)
+                            @if(isset($soalRandom) && $soalRandom->count() > 0)
                             <form id="quizForm" action="{{ route('student.quiz.submit', [$course->id, $quiz->id]) }}" method="POST">
                                 @csrf
 
-                                @forelse($quiz->soal as $index => $soal)
+                                @forelse($soalRandom as $index => $soal)
                                 <!-- Question -->
                                 <div class="mb-4 p-3 bg-light rounded">
                                     <h6 class="fw-bold mb-3">
@@ -44,25 +45,25 @@
                                         {{ $soal->pertanyaan }}
                                     </h6>
                                     <div class="form-check mb-2">
-                                        <input class="form-check-input" type="radio" name="jawaban[{{ $soal->id }}]" id="soal{{ $soal->id }}_a" value="a">
+                                        <input class="form-check-input" type="radio" name="jawaban[{{ $soal->id }}]" id="soal{{ $soal->id }}_a" value="a" required>
                                         <label class="form-check-label" for="soal{{ $soal->id }}_a">
                                             {{ $soal->pilihan_a }}
                                         </label>
                                     </div>
                                     <div class="form-check mb-2">
-                                        <input class="form-check-input" type="radio" name="jawaban[{{ $soal->id }}]" id="soal{{ $soal->id }}_b" value="b">
+                                        <input class="form-check-input" type="radio" name="jawaban[{{ $soal->id }}]" id="soal{{ $soal->id }}_b" value="b" required>
                                         <label class="form-check-label" for="soal{{ $soal->id }}_b">
                                             {{ $soal->pilihan_b }}
                                         </label>
                                     </div>
                                     <div class="form-check mb-2">
-                                        <input class="form-check-input" type="radio" name="jawaban[{{ $soal->id }}]" id="soal{{ $soal->id }}_c" value="c">
+                                        <input class="form-check-input" type="radio" name="jawaban[{{ $soal->id }}]" id="soal{{ $soal->id }}_c" value="c" required>
                                         <label class="form-check-label" for="soal{{ $soal->id }}_c">
                                             {{ $soal->pilihan_c }}
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="jawaban[{{ $soal->id }}]" id="soal{{ $soal->id }}_d" value="d">
+                                        <input class="form-check-input" type="radio" name="jawaban[{{ $soal->id }}]" id="soal{{ $soal->id }}_d" value="d" required>
                                         <label class="form-check-label" for="soal{{ $soal->id }}_d">
                                             {{ $soal->pilihan_d }}
                                         </label>
@@ -77,7 +78,7 @@
 
                                 <div class="d-flex gap-2 mt-4">
                                     <a href="{{ route('student.course-learn', $course->id) }}" class="btn btn-outline-secondary">Batalkan</a>
-                                    @if($quiz->soal->count() > 0)
+                                    @if(isset($soalRandom) && $soalRandom->count() > 0)
                                     <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#confirmQuizModal">
                                         Selesaikan Quiz
                                     </button>

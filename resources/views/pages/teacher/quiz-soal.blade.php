@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-4">
+<div class="container mt-4" style="margin-left: 250px; padding-top: 70px;">
     <div class="row">
         <div class="col-md-12">
             <!-- Header Section -->

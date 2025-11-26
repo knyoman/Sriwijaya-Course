@@ -11,18 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Drop tabel yang ada jika ada masalah struktur
+        if (Schema::hasTable('mentoring_feedback')) {
+            Schema::dropIfExists('mentoring_feedback');
+        }
+
+        // Buat tabel dengan struktur yang benar
         Schema::create('mentoring_feedback', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('mentoring_id');
             $table->unsignedBigInteger('pelajar_id');
-            $table->integer('rating')->nullable(); // 1-5 bintang
             $table->text('feedback_text')->nullable();
-            $table->json('benefits')->nullable(); // Array of selected benefits
+            $table->integer('rating')->nullable();
+            $table->json('benefits')->nullable();
             $table->timestamps();
 
             $table->foreign('mentoring_id')->references('id')->on('mentoring')->onDelete('cascade');
             $table->foreign('pelajar_id')->references('id')->on('pengguna')->onDelete('cascade');
-            $table->unique(['mentoring_id', 'pelajar_id']);
         });
     }
 

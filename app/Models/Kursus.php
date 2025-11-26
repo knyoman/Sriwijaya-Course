@@ -47,7 +47,7 @@ class Kursus extends Model
             'kursus_pelajar',
             'kursus_id',
             'pelajar_id'
-        );
+        )->withPivot('status', 'nilai_akhir', 'metode_pembayaran', 'status_pembayaran')->withTimestamps();
     }
 
     /**
@@ -80,6 +80,14 @@ class Kursus extends Model
     public function mentoring()
     {
         return $this->hasMany(Mentoring::class, 'kursus_id');
+    }
+
+    /**
+     * Submissions untuk semua materi dalam kursus (via materi)
+     */
+    public function materiSubmissions()
+    {
+        return $this->hasManyThrough(\App\Models\MateriSubmission::class, \App\Models\Materi::class, 'kursus_id', 'materi_id', 'id', 'id');
     }
 
     /**

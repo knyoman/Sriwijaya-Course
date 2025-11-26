@@ -3,31 +3,329 @@
 @section('title', 'Home - Kursus Sriwijaya')
 
 @section('content')
+{{-- Memuat Bootstrap Icons --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 <!-- Hero Section -->
-<section class="hero bg-primary text-white py-5">
+<style>
+    /* 1. Background Gradient Modern dengan Overlay */
+    .hero-section {
+        background: linear-gradient(135deg, #0d6efd 0%, #0043a8 50%, #001d4a 100%);
+        position: relative;
+        overflow: hidden;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Overlay Pattern untuk depth */
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    /* Decorative circles */
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        top: -250px;
+        right: -250px;
+        animation: pulse 8s ease-in-out infinite;
+    }
+
+    /* 2. Animasi Teks - Lebih smooth */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+            filter: blur(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
+
+    /* 3. Animasi Gambar - Lebih halus dan natural (TIDAK DIGUNAKAN LAGI TAPI DIBIARKAN ADA) */
+    @keyframes floatImage {
+
+        0%,
+        100% {
+            transform: translateY(0px) scale(1);
+        }
+
+        50% {
+            transform: translateY(-25px) scale(1.02);
+        }
+    }
+
+    /* 4. Animasi Pulse untuk elemen dekoratif */
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 0.3;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.5;
+        }
+    }
+
+    /* 5. Animasi Slide dari kanan */
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* 6. Kelas untuk menerapkan animasi */
+    .animate-text {
+        opacity: 0;
+        animation: fadeInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    /* Penundaan waktu yang lebih teratur */
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+        animation-delay: 0.3s;
+    }
+
+    .delay-300 {
+        animation-delay: 0.5s;
+    }
+
+    .delay-400 {
+        animation-delay: 0.7s;
+    }
+
+    /* Kelas untuk gambar dengan efek lebih keren */
+    .hero-img-animate {
+        /* PERUBAHAN DISINI: Animasi floatImage dimatikan */
+        /* animation: floatImage 6s ease-in-out infinite; */
+        animation: none;
+        /* Memastikan tidak ada animasi looping */
+
+        max-width: 100%;
+        filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+        transition: transform 0.3s ease;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Efek hover tetap dipertahankan agar sedikit interaktif */
+    .hero-img-animate:hover {
+        transform: scale(1.05) translateY(-10px);
+    }
+
+    /* Container gambar dengan glow effect */
+    .hero-img-container {
+        position: relative;
+        animation: slideInRight 1.2s ease-out forwards;
+        opacity: 0;
+        animation-delay: 0.4s;
+    }
+
+    .hero-img-container::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 80%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+        filter: blur(40px);
+        z-index: 1;
+        animation: pulse 4s ease-in-out infinite;
+    }
+
+    /* Styling Tombol dengan efek modern */
+    .btn-hero {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        border-radius: 50px;
+        padding: 12px 32px;
+        font-weight: 600;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .btn-hero::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+        z-index: -1;
+    }
+
+    .btn-hero:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-hero:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-hero:active {
+        transform: translateY(-2px);
+    }
+
+    /* Text enhancement */
+    .hero-title {
+        font-weight: 800;
+        line-height: 1.2;
+        text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        letter-spacing: -0.5px;
+    }
+
+    .hero-subtitle {
+        font-weight: 300;
+        line-height: 1.6;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        opacity: 0.95;
+    }
+
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: auto;
+            padding: 60px 0;
+        }
+
+        .hero-img-animate {
+            max-width: 85%;
+        }
+
+        .hero-section::after {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            right: -150px;
+        }
+    }
+
+    /* Tambahan efek parallax sederhana */
+    .parallax-element {
+        transition: transform 0.3s ease-out;
+    }
+
+    /* Animasi Typing Effect untuk Sriwijaya Course */
+    @keyframes typing {
+        from {
+            width: 0;
+        }
+
+        to {
+            width: 100%;
+        }
+    }
+
+    @keyframes blink {
+        50% {
+            border-right-color: transparent;
+        }
+    }
+
+    .typing-text {
+        color: #ffdd57;
+        display: block;
+        border-right: 3px solid #ffdd57;
+        overflow: hidden;
+        white-space: nowrap;
+        animation: typing 3s steps(30, end) infinite, blink 1s step-end infinite;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-top: 0.5rem;
+    }
+
+    .typing-text span {
+        display: none;
+    }
+
+    .typing-text.active {
+        animation: typing 3s steps(30, end) infinite, blink 1s step-end infinite;
+    }
+
+    /* Style Kartu Baru (Sama seperti dashboard) */
+    .transition-hover {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .transition-hover:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1) !important;
+    }
+</style>
+
+<section class="hero-section text-white py-5">
     <div class="container py-5">
         <div class="row align-items-center">
-            <!-- Teks -->
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <h1 class="display-4 fw-bold mb-4">
-                    Wujudkan Masa Depan Gemilang Bersama Sriwijaya Course
+
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="display-4 fw-bold mb-4 animate-text">
+                    Wujudkan Masa Depan Gemilang Bersama
+                    <span class="typing-text active">Sriwijaya Course</span>
                 </h1>
-                <p class="lead mb-4">
+
+                <p class="lead mb-4 animate-text delay-100" style="opacity: 0.9;">
                     Program belajar yang terstruktur, mentor berpengalaman, dan metode efektif untuk membantu kamu mencapai target akademik dan karier.
                 </p>
-                <a href="{{ route('courses') }}" class="btn btn-light btn-lg">Lihat Kursus</a>
+
+                <div class="animate-text delay-200">
+                    <a href="{{ route('courses') }}" class="btn btn-light btn-lg px-4 py-2 btn-hero fw-bold text-primary">
+                        Lihat Kursus <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
             </div>
 
-            <!-- Gambar -->
             <div class="col-lg-6 text-center text-lg-end">
-                <img
-                    src="/Image/Laptop.png"
-                    alt="Hero Image"
-                    class="img-fluid hero-img"
-                    style="max-width: 80%; transform: translateX(1px);">
+                <div class="animate-text delay-300">
+                    <img
+                        src="/Image/Laptop.jpg"
+                        alt="Belajar Online Sriwijaya Course"
+                        class="img-fluid hero-img-animate">
+                </div>
             </div>
+
         </div>
     </div>
+
+    <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(60px);"></div>
 </section>
 
 
@@ -88,36 +386,107 @@
     </div>
 </section>
 
-<!-- Courses Section -->
+<!-- Courses Section (DIPERBARUI) -->
 <section class="courses py-5 bg-light">
     <div class="container">
         <h2 class="text-center mb-5 fw-bold">Kursus Populer</h2>
         <div class="row g-4">
             @forelse($courses->take(3) as $course)
-            <div class="col-md-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <img src="{{ $course->image ?: 'https://via.placeholder.com/400x250?text=' . urlencode($course->nama) }}" class="card-img-top" alt="{{ $course->nama }}" style="height: 200px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">{{ $course->nama }}</h5>
-                        <p class="card-text">{{ Str::limit($course->deskripsi, 100) }}</p>
-                        <p class="text-danger fw-bold">Rp {{ number_format($course->harga, 0, ',', '.') }}</p>
-                        <p class="text-muted small">Durasi: <strong>{{ $course->durasi_jam }} jam</strong></p>
-                        @auth
-                        @if(auth()->user()->peran === 'pelajar')
-                        @if(auth()->user()->enrolledCourses()->where('kursus_id', $course->id)->exists())
-                        <a href="{{ route('student.course-learn', $course->id) }}" class="btn btn-success w-100">Lanjutkan Belajar</a>
-                        @else
-                        <form action="{{ route('student.course.enroll', $course->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-primary w-100">Daftar Sekarang</button>
-                        </form>
-                        @endif
-                        @else
-                        <a href="{{ route('course.detail', $course->slug) }}" class="btn btn-primary w-100">Lihat Detail</a>
-                        @endif
-                        @else
-                        <a href="{{ route('login') }}" class="btn btn-primary w-100">Daftar Sekarang</a>
-                        @endauth
+
+            {{-- Logika Enrollment --}}
+            @php
+            $isEnrolled = auth()->check() && auth()->user()->peran === 'pelajar' && auth()->user()->enrolledCourses()->where('kursus_id', $course->id)->exists();
+            @endphp
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden transition-hover">
+
+                    {{-- Gambar (Aspect Ratio 16:9) --}}
+                    <div class="position-relative" style="aspect-ratio: 16/9; overflow: hidden;">
+                        <img src="{{ $course->image ?: 'https://via.placeholder.com/640x360?text=' . urlencode($course->nama) }}"
+                            class="w-100 h-100"
+                            alt="{{ $course->nama }}"
+                            style="object-fit: cover; object-position: center;">
+
+                        {{-- Badge Kategori --}}
+                        <div class="position-absolute top-0 start-0 m-2">
+                            <span class="badge bg-white text-primary fw-bold shadow-sm px-2 py-1 rounded-pill small">
+                                Kursus
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Card Body (Compact Padding p-3) --}}
+                    <div class="card-body d-flex flex-column p-3">
+
+                        {{-- Info Pengajar --}}
+                        <div class="d-flex align-items-center mb-1 text-muted small" style="font-size: 0.8rem;">
+                            <i class="bi bi-person-circle me-1 text-secondary"></i>
+                            <span class="fw-medium text-truncate">{{ $course->pengajar->nama ?? 'Instruktur Sriwijaya' }}</span>
+                        </div>
+
+                        {{-- Judul Kursus --}}
+                        <h6 class="card-title fw-bold text-dark mb-1" style="font-size: 1.1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.6rem; line-height: 1.3rem;">
+                            {{ $course->nama }}
+                        </h6>
+
+                        {{-- Deskripsi Singkat --}}
+                        <p class="card-text text-muted small mb-2" style="font-size: 0.85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;">
+                            {{ Str::limit($course->deskripsi, 80) }}
+                        </p>
+
+                        {{-- Info Meta (Durasi & Siswa) --}}
+                        <div class="d-flex gap-3 mb-3 text-secondary small border-top pt-2" style="font-size: 0.8rem;">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-clock me-1 text-warning"></i>
+                                <span>{{ $course->durasi_jam }} Jam</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-people me-1 text-info"></i>
+                                <span>{{ $course->pelajar_count ?? 0 }} Siswa</span>
+                            </div>
+                        </div>
+
+                        {{-- Footer: Harga & Tombol --}}
+                        <div class="mt-auto d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-muted d-block" style="font-size: 0.7rem;">Harga</small>
+                                {{-- Warna Harga: Biru jika belum daftar, Hijau jika sudah --}}
+                                <span class="fw-bold {{ $isEnrolled ? 'text-success' : 'text-primary' }} fs-5">
+                                    Rp {{ number_format($course->harga, 0, ',', '.') }}
+                                </span>
+                            </div>
+
+                            {{-- Logika Tombol Aksi --}}
+                            <div class="d-flex">
+                                @auth
+                                @if(auth()->user()->peran === 'pelajar')
+                                @if($isEnrolled)
+                                <a href="{{ route('student.course-learn', $course->id) }}" class="btn btn-outline-success rounded-pill fw-bold px-3 py-1 btn-sm">
+                                    Lanjut
+                                </a>
+                                @else
+                                <form action="{{ route('student.course.enroll', $course->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary rounded-pill fw-bold px-3 py-1 btn-sm shadow-sm">
+                                        Daftar
+                                    </button>
+                                </form>
+                                @endif
+                                @else
+                                {{-- Untuk Admin/Pengajar --}}
+                                <a href="{{ route('course.detail', $course->slug ?? $course->id) }}" class="btn btn-primary rounded-pill fw-bold px-3 py-1 btn-sm shadow-sm">
+                                    Detail
+                                </a>
+                                @endif
+                                @else
+                                {{-- Untuk Tamu --}}
+                                <a href="{{ route('login') }}" class="btn btn-primary rounded-pill fw-bold px-3 py-1 btn-sm shadow-sm">
+                                    Daftar
+                                </a>
+                                @endauth
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -128,7 +497,7 @@
             @endforelse
         </div>
         <div class="text-center mt-5">
-            <a href="{{ route('courses') }}" class="btn btn-primary btn-lg">Lihat Semua Kursus</a>
+            <a href="{{ route('courses') }}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">Lihat Semua Kursus</a>
         </div>
     </div>
 </section>
@@ -230,15 +599,14 @@
             <div class="col-md-4">
                 <div class="testimonial-card p-4 border rounded shadow-sm bg-white h-100">
                     <div class="d-flex mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
                     </div>
                     <p class="mb-4">"Sriwijaya Course benar-benar mengubah cara saya belajar. Mentornya sangat responsif dan materi yang diberikan sangat relevan dengan industri. Sekarang saya sudah bisa mendapatkan pekerjaan di bidang yang saya impikan!"</p>
                     <div class="d-flex align-items-center">
-                        <!-- Ade (male portrait) -->
                         <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=faces"
                             alt="Ade Pratama"
                             class="rounded-circle me-3"
@@ -255,15 +623,14 @@
             <div class="col-md-4">
                 <div class="testimonial-card p-4 border rounded shadow-sm bg-white h-100">
                     <div class="d-flex mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
                     </div>
                     <p class="mb-4">"Saya terkesan dengan komunitas yang sangat supportif dan mentor yang berpengalaman. Tidak hanya belajar skill teknis, tapi juga soft skill yang sangat penting untuk karier. Recommended banget!"</p>
                     <div class="d-flex align-items-center">
-                        <!-- Siti (female portrait) -->
                         <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces"
                             alt="Siti Nurhaliza"
                             class="rounded-circle me-3"
@@ -280,15 +647,14 @@
             <div class="col-md-4">
                 <div class="testimonial-card p-4 border rounded shadow-sm bg-white h-100">
                     <div class="d-flex mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
                     </div>
                     <p class="mb-4">"Materi terstruktur dengan baik dan cara pengajaran yang mudah dipahami. Saya dari background non-IT dan sekarang sudah bisa membuat website sendiri. Terima kasih Sriwijaya Course!"</p>
                     <div class="d-flex align-items-center">
-                        <!-- Budi (male portrait) -->
                         <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=faces"
                             alt="Budi Santoso"
                             class="rounded-circle me-3"
@@ -304,14 +670,12 @@
     </div>
 </section>
 
-
-
 <!-- CTA Section -->
 <section class="cta py-5 bg-primary text-white">
     <div class="container text-center">
         <h2 class="fw-bold mb-3">Siap Memulai Perjalanan Belajar Kamu?</h2>
         <p class="lead mb-4">Daftar sekarang dan dapatkan akses ke ribuan kursus berkualitas tinggi</p>
-        <a href="{{ route('courses') }}" class="btn btn-light btn-lg">Mulai Belajar Sekarang</a>
+        <a href="{{ route('courses') }}" class="btn btn-light btn-lg rounded-pill px-5 fw-bold shadow">Mulai Belajar Sekarang</a>
     </div>
 </section>
 

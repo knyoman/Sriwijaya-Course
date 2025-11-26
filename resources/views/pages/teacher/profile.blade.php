@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex">
     @include('components.sidebar-teacher')
-    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+    <main style="flex: 1; padding: 2rem; width: 100%; margin-left: 250px; padding-top: 70px;">
         <div class="container-fluid">
             <!-- Alert Messages -->
             @if(session('success'))

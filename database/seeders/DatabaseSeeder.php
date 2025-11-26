@@ -130,6 +130,8 @@ class DatabaseSeeder extends Seeder
         $pelajars = User::where('peran', 'pelajar')->get();
         $kursuses = Kursus::all();
 
+        $metodePembayaran = ['Transfer Bank', 'E-Wallet', 'Kartu Kredit', 'Virtual Account'];
+
         foreach ($pelajars as $p) {
             // Setiap pelajar mendaftar 2-3 kursus
             $randomCourses = $kursuses->random(rand(2, 3));
@@ -137,8 +139,14 @@ class DatabaseSeeder extends Seeder
                 $p->enrolledCourses()->attach($course->id, [
                     'status' => 'terdaftar',
                     'nilai_akhir' => rand(50, 100),
+                    'metode_pembayaran' => $metodePembayaran[array_rand($metodePembayaran)],
+                    'status_pembayaran' => 'lunas',
                 ]);
             }
         }
+
+        // Run mentoring and feedback seeders
+        $this->call(MentoringSeeder::class);
+        $this->call(MentoringFeedbackSeeder::class);
     }
 }

@@ -4,7 +4,7 @@
 @include('components.navbar-admin')
 <div class="d-flex">
     @include('components.sidebar-admin')
-    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+    <main style="flex: 1; margin-left: 250px; padding-top: 70px; padding: 2rem;">
         <div class="container-fluid">
             <h5 class="mb-3">Entry Kursus</h5>
             <div class="mb-3">
@@ -21,6 +21,9 @@
                             <p class="small text-muted mb-2">{{ Str::limit($course->deskripsi, 100) }}</p>
                             <p class="text-danger fw-bold">Rp {{ number_format($course->harga, 0, ',', '.') }}</p>
                             <p class="small text-secondary">Pengajar: <strong>{{ $course->pengajar->nama ?? '-' }}</strong></p>
+                            <p class="small text-secondary">
+                                <i class="fas fa-users me-1"></i>{{ $course->pelajar_count ?? 0 }} Peserta
+                            </p>
                             <p class="small text-secondary">Status:
                                 <span class="badge 
                                     {{ $course->status === 'published' ? 'bg-success' : ($course->status === 'draft' ? 'bg-warning' : 'bg-danger') }}">

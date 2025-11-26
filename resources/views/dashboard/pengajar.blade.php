@@ -3,7 +3,7 @@
 @section('title', 'Dashboard Pengajar - Kursus Sriwijaya')
 
 @section('content')
-<div class="container py-5">
+<div class="container py-5" style="margin-left: 250px; padding-top: 70px;">
     <div class="row mb-4">
         <div class="col-md-8">
             <h1 class="fw-bold">Dashboard Pengajar</h1>

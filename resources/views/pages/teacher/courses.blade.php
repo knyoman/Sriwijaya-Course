@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex">
     @include('components.sidebar-teacher')
-    <main class="flex-fill p-4">
+    <main style="margin-left: 250px; padding-top: 70px;" class="flex-fill p-4">
         <div class="mb-4 d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="mb-1">Entry Kursus</h5>
@@ -31,7 +31,7 @@
                         <p class="small text-muted mb-2">{{ Str::limit($course->deskripsi, 80) }}</p>
                         <div class="mb-3">
                             <small class="text-muted">
-                                <i class="fa-solid fa-users me-1"></i>{{ $course->jumlah_pelajar ?? 0 }} Peserta
+                                <i class="fa-solid fa-users me-1"></i>{{ $course->pelajar_count ?? 0 }} Peserta
                             </small>
                         </div>
                     </div>

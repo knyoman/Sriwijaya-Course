@@ -6,7 +6,7 @@
 @include('components.navbar-admin')
 <div class="d-flex">
     @include('components.sidebar-admin')
-    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+    <main style="flex: 1; margin-left: 250px; padding-top: 70px; padding: 2rem;">
         <div class="container-fluid">
             <div class="row mb-4">
                 <div class="col-md-12">

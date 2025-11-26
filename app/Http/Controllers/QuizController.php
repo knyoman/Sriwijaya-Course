@@ -21,14 +21,27 @@ class QuizController extends Controller
             abort(403, 'Anda belum terdaftar di kursus ini');
         }
 
-        $quiz = Quiz::with('soal')->findOrFail($quizId);
+        $quiz = Quiz::findOrFail($quizId);
 
         // Verify quiz belongs to course
         if ($quiz->kursus_id !== $course->id) {
             abort(404);
         }
 
-        return view('pages.student.quiz', compact('course', 'quiz'));
+        // Ambil soal secara random sesuai jumlah soal yang dikonfigurasi
+        $soalRandom = $quiz->getSoalRandom($quiz->jumlah_soal);
+
+        // Jika tidak ada soal, tampilkan pesan error
+        if ($soalRandom->isEmpty()) {
+            return view('pages.student.quiz', compact('course', 'quiz'))->with('error', 'Soal quiz belum tersedia');
+        }
+
+        // Store soal yang ditampilkan di session untuk validasi di submit
+        session([
+            'quiz_soal_' . $quizId => $soalRandom->pluck('id')->toArray()
+        ]);
+
+        return view('pages.student.quiz', compact('course', 'quiz', 'soalRandom'));
     }
 
     /**
@@ -51,7 +64,18 @@ class QuizController extends Controller
         }
 
         $jawaban = $request->input('jawaban', []);
-        $soal = $quiz->soal;
+
+        // Ambil soal yang seharusnya ditampilkan dari session
+        $soalIds = session('quiz_soal_' . $quizId, []);
+
+        if (empty($soalIds)) {
+            // Fallback: ambil soal secara random jika session expired
+            $soalRandom = $quiz->getSoalRandom($quiz->jumlah_soal);
+            $soalIds = $soalRandom->pluck('id')->toArray();
+        }
+
+        // Ambil soal berdasarkan ID yang di-session
+        $soal = SoalQuiz::whereIn('id', $soalIds)->get();
 
         $benar = 0;
         $totalSoal = $soal->count();
@@ -81,6 +105,9 @@ class QuizController extends Controller
                 'quiz_id' => $quizId,
             ]
         ]);
+
+        // Clear soal session setelah submit
+        session()->forget('quiz_soal_' . $quizId);
 
         return redirect()->route('student.quiz-result')
             ->with('success', 'Quiz berhasil disubmit. Nilai Anda: ' . $nilai);

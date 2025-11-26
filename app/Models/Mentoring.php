@@ -17,9 +17,10 @@ class Mentoring extends Model
         'tanggal',
         'jam',
         'durasi',
-        'topik',
         'status',
         'zoom_link',
+        // 'topik' opsional, jika masih ada di database
+        'topik',
     ];
 
     protected $casts = [

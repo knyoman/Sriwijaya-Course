@@ -35,4 +35,27 @@ class Quiz extends Model
     {
         return $this->hasMany(SoalQuiz::class, 'quiz_id')->orderBy('urutan');
     }
+
+    /**
+     * Get random soal untuk quiz tanpa orderBy
+     * @param int $limit Jumlah soal yang akan ditampilkan
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getSoalRandom($limit = null)
+    {
+        // Query langsung tanpa relasi yang sudah punya orderBy
+        $query = SoalQuiz::where('quiz_id', $this->id);
+
+        // Jika limit null, ambil semua soal
+        if ($limit === null) {
+            $limit = $this->jumlah_soal;
+        }
+
+        // Pastikan limit tidak melebihi total soal yang ada
+        $totalSoal = $query->count();
+        $limit = min($limit, $totalSoal);
+
+        // Ambil secara random tanpa orderBy yang mengacaukan
+        return $query->inRandomOrder()->take($limit)->get();
+    }
 }

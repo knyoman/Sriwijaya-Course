@@ -4,7 +4,7 @@
 @include('components.navbar-admin')
 <div class="d-flex">
     @include('components.sidebar-admin')
-    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+    <main style="flex: 1; margin-left: 250px; padding-top: 70px; padding: 2rem;">
         <div class="container-fluid">
             <!-- Header -->
             <div class="mb-4">
@@ -40,7 +40,7 @@
                                 <strong>Tanggal:</strong> {{ $mentoring->tanggal->locale('id')->translatedFormat('l, d F Y') }}
                             </p>
                             <p class="mb-2">
-                                <strong>Waktu:</strong> {{ $mentoring->jam }} ({{ $mentoring->durasi }} menit)
+                                <strong>Waktu:</strong> {{ \Carbon\Carbon::parse($mentoring->jam)->format('H:i') }} ({{ $mentoring->durasi }} menit)
                             </p>
                             <p class="mb-0">
                                 <strong>Total Feedback:</strong> <span class="badge bg-primary">{{ count($feedbacks) }}</span>

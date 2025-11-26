@@ -6,7 +6,7 @@
 @include('components.navbar-student')
 <div class="d-flex">
     @include('components.sidebar-student')
-    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+    <main style="flex: 1; margin-left: 250px; padding-top: 70px; padding: 2rem; padding-top: 70px;">
         <div class="container-fluid">
             <!-- Header -->
             <div class="row mb-4">
@@ -15,10 +15,6 @@
                         <i class="fas fa-th-large me-2" style="color: #2563eb;"></i>Dashboard Pelajar
                     </h1>
                     <p class="text-muted">Selamat datang, {{ auth()->user()->nama }}!</p>
-                </div>
-                <div class="col-md-4 text-end">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}&background=random&color=fff&size=100"
-                        alt="Avatar" class="rounded-circle border-3" style="border-color: #2563eb;" width="80">
                 </div>
             </div>
 
@@ -101,15 +97,7 @@
                                             <small class="badge bg-primary">{{ $kursus->materi->count() }} Materi</small>
                                         </div>
                                         <p class="text-muted small mb-2">{{ Str::limit($kursus->deskripsi, 100) }}</p>
-                                        <div class="progress" style="height: 6px;">
-                                            <div class="progress-bar bg-primary" style="width: {{ min($kursus->pivot->nilai_akhir ?? 0, 100) }}%"></div>
-                                        </div>
-                                        <small class="text-muted">
-                                            {{ intval($kursus->pivot->nilai_akhir ?? 0) }}% selesai
-                                            @if($kursus->pivot->status)
-                                            • Status: <span class="badge bg-success">{{ ucfirst($kursus->pivot->status) }}</span>
-                                            @endif
-                                        </small>
+                                        <!-- Progress and status removed per request -->
                                     </div>
                                 </div>
                                 @endforeach
@@ -196,8 +184,8 @@
     }
 
     main {
-        background-color: #f8fafc;
-        min-height: calc(100vh - 60px);
+        background-color: transparent;
+        min-height: unset;
     }
 
     .btn-primary {

@@ -12,23 +12,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('mentoring', function (Blueprint $table) {
-            // Tambahkan kolom baru jika belum ada
+            // Tambahkan kolom kursus_id
+            if (!Schema::hasColumn('mentoring', 'kursus_id')) {
+                $table->unsignedBigInteger('kursus_id')->nullable()->after('pengajar_id');
+                $table->foreign('kursus_id')->references('id')->on('kursus')->onDelete('cascade');
+            }
+
+            // Tambahkan kolom baru
             if (!Schema::hasColumn('mentoring', 'topik')) {
                 $table->string('topik')->nullable()->after('jam');
             }
             if (!Schema::hasColumn('mentoring', 'durasi')) {
                 $table->integer('durasi')->nullable()->after('topik');
             }
-            if (!Schema::hasColumn('mentoring', 'jumlah_peserta')) {
-                $table->integer('jumlah_peserta')->nullable()->after('durasi');
-            }
-            if (!Schema::hasColumn('mentoring', 'deskripsi')) {
-                $table->text('deskripsi')->nullable()->after('jumlah_peserta');
-            }
 
-            // Update enum status jika diperlukan
-            if (Schema::hasColumn('mentoring', 'status')) {
+            // Ubah enum status
+            try {
                 $table->enum('status', ['Belum', 'Sedang Berlangsung', 'Sudah'])->default('Belum')->change();
+            } catch (\Exception $e) {
+                // Skip jika ada error
             }
         });
     }
@@ -39,7 +41,16 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('mentoring', function (Blueprint $table) {
-            $table->dropColumn(['topik', 'durasi', 'jumlah_peserta', 'deskripsi']);
+            if (Schema::hasColumn('mentoring', 'kursus_id')) {
+                $table->dropForeign(['kursus_id']);
+                $table->dropColumn('kursus_id');
+            }
+            if (Schema::hasColumn('mentoring', 'topik')) {
+                $table->dropColumn('topik');
+            }
+            if (Schema::hasColumn('mentoring', 'durasi')) {
+                $table->dropColumn('durasi');
+            }
         });
     }
 };

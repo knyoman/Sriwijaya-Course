@@ -9,13 +9,19 @@ class PageController extends Controller
 {
     public function home()
     {
-        $courses = Kursus::where('status', 'published')->get();
+        $courses = Kursus::where('status', 'published')
+            ->with('pengajar')
+            ->withCount('pelajar')
+            ->get();
         return view('pages.home', compact('courses'));
     }
 
     public function courses()
     {
-        $courses = Kursus::where('status', 'published')->get();
+        $courses = Kursus::where('status', 'published')
+            ->with('pengajar')
+            ->withCount('pelajar')
+            ->get();
         return view('pages.courses', compact('courses'));
     }
 

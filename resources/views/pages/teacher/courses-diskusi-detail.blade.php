@@ -3,8 +3,8 @@
 @section('content')
 @include('components.navbar-admin')
 <div class="d-flex">
-    @include('components.sidebar-admin')
-    <main style="flex: 1; margin-left: 170px; padding: 2rem;">
+    @include('components.sidebar-teacher')
+    <main style="flex: 1; padding: 2rem; width: 100%; margin-left: 250px; padding-top: 70px;">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>

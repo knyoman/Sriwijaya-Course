@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -56,6 +57,17 @@ class LoginController extends Controller
         // Login user
         Auth::login($user, $request->boolean('remember'));
 
+        // Catat aktivitas login
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'activity_type' => 'login',
+            'description' => $user->nama . ' melakukan login',
+            'action_model' => 'User',
+            'model_id' => $user->id,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
         // Redirect berdasarkan peran
         return $this->redirectByRole($user);
     }
@@ -82,6 +94,21 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        $user = Auth::user();
+
+        // Catat aktivitas logout
+        if ($user) {
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'activity_type' => 'logout',
+                'description' => $user->nama . ' melakukan logout',
+                'action_model' => 'User',
+                'model_id' => $user->id,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

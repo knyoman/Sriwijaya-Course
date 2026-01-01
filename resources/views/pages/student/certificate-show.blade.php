@@ -484,7 +484,7 @@
                     <i class="fa-solid fa-arrow-left me-2"></i> Kembali
                 </a>
                 <button class="btn btn-success btn-lg px-5 shadow-sm" onclick="downloadImage()">
-                    <i class="fa-solid fa-image me-2"></i> Unduh JPGHQ
+                    <i class="fa-solid fa-image me-2"></i> Unduh JPG
                 </button>
             </div>
 

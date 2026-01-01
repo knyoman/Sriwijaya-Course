@@ -36,7 +36,7 @@
                             <td style="width:50px;">{{ $i+1 }}</td>
                             <td style="min-width:240px;">{{ Str::limit($s->materi->judul_materi, 60) }}</td>
                             <td style="min-width:160px;">{{ $s->pelajar->nama }}</td>
-                            <td><a href="{{ asset('storage/' . $s->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">Unduh</a></td>
+                            <td><a href="{{ asset('storage/' . $s->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">Lihat</a></td>
                             <td style="width:80px; text-align:center;">{{ $s->nilai ?? '-' }}</td>
                             <td style="width:110px; text-align:center;"><span class="badge bg-{{ $s->status==='lulus' ? 'success' : ($s->status==='tidak_lulus' ? 'danger' : 'secondary') }}">{{ ucfirst($s->status) }}</span></td>
                             <td style="width:360px;">
